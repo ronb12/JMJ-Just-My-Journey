@@ -29,14 +29,30 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     };
   }
   const sql = getSql();
-  const rows = (await sql`
-    SELECT
-      facebook_url, instagram_url, tiktok_url, youtube_url, x_url,
-      business_name, support_email, support_phone, support_address, footer_note
-    FROM site_settings
-    ORDER BY updated_at DESC
-    LIMIT 1
-  `) as SiteSettings[];
+  let rows: SiteSettings[] = [];
+  try {
+    rows = (await sql`
+      SELECT
+        facebook_url, instagram_url, tiktok_url, youtube_url, x_url,
+        business_name, support_email, support_phone, support_address, footer_note
+      FROM site_settings
+      ORDER BY updated_at DESC
+      LIMIT 1
+    `) as SiteSettings[];
+  } catch (e: unknown) {
+    const err = e as { code?: string };
+    // Backwards-compat: allow build/runtime even if the migration hasn't run yet.
+    if (err?.code === "42703") {
+      rows = (await sql`
+        SELECT facebook_url, instagram_url, tiktok_url, youtube_url, x_url
+        FROM site_settings
+        ORDER BY updated_at DESC
+        LIMIT 1
+      `) as SiteSettings[];
+    } else {
+      throw e;
+    }
+  }
   return (
     rows[0] ?? {
       facebook_url: null,

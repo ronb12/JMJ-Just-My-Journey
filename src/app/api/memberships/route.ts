@@ -58,6 +58,20 @@ export async function DELETE(req: Request) {
   }
   const id = z.string().uuid().parse(new URL(req.url).searchParams.get("id"));
   const sql = getSql();
-  await sql`UPDATE memberships SET is_active = false WHERE id = ${id}::uuid`;
-  return NextResponse.json({ ok: true });
+  try {
+    const del = (await sql`DELETE FROM memberships WHERE id = ${id}::uuid RETURNING id`) as { id: string }[];
+    if (!del[0]) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    return NextResponse.json({ ok: true });
+  } catch (e: unknown) {
+    const code = (e as { code?: string })?.code;
+    if (code === "23503") {
+      return NextResponse.json(
+        { error: "Cannot delete membership because it is referenced by other records." },
+        { status: 409 }
+      );
+    }
+    throw e;
+  }
 }

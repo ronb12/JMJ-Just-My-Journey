@@ -9,6 +9,13 @@ export default function AdminSettings() {
   const [pk, setPk] = useState("");
   const [sk, setSk] = useState("");
   const [hasSecret, setHasSecret] = useState(false);
+  const [social, setSocial] = useState({
+    instagram_url: "",
+    facebook_url: "",
+    tiktok_url: "",
+    youtube_url: "",
+    x_url: "",
+  });
   const load = useCallback(() => {
     void fetch("/api/admin/stripe-settings")
       .then((r) => r.json())
@@ -17,6 +24,18 @@ export default function AdminSettings() {
         if (d.publishableKey) setPk(d.publishableKey);
         setHasSecret(d.hasCustomSecret);
       });
+    void fetch("/api/admin/site-settings")
+      .then((r) => r.json())
+      .then((d) => {
+        setSocial({
+          instagram_url: String(d.instagram_url || ""),
+          facebook_url: String(d.facebook_url || ""),
+          tiktok_url: String(d.tiktok_url || ""),
+          youtube_url: String(d.youtube_url || ""),
+          x_url: String(d.x_url || ""),
+        });
+      })
+      .catch(() => {});
   }, []);
   useEffect(() => {
     load();
@@ -94,6 +113,53 @@ export default function AdminSettings() {
             Use platform (env) keys
           </LuxuryButton>
         )}
+      </GlassCard>
+
+      <h2 className="mt-10 font-serif text-2xl text-[#1E3A8A]">Social links</h2>
+      <p className="mt-1 max-w-lg text-sm text-slate-600">
+        Add your social media URLs here. They’ll be linked on the home page footer.
+      </p>
+      <GlassCard className="mt-4 max-w-lg space-y-3 text-sm">
+        {(
+          [
+            ["instagram_url", "Instagram URL"],
+            ["facebook_url", "Facebook URL"],
+            ["tiktok_url", "TikTok URL"],
+            ["youtube_url", "YouTube URL"],
+            ["x_url", "X (Twitter) URL"],
+          ] as const
+        ).map(([k, label]) => (
+          <div key={k}>
+            <p className="text-xs text-slate-500">{label}</p>
+            <input
+              className="mt-1 w-full rounded-xl border border-white/40 bg-white/50 px-2 py-1 text-xs"
+              value={social[k]}
+              onChange={(e) => setSocial((s) => ({ ...s, [k]: e.target.value }))}
+              placeholder="https://..."
+              autoComplete="off"
+            />
+          </div>
+        ))}
+        <LuxuryButton
+          type="button"
+          onClick={async () => {
+            await fetch("/api/admin/site-settings", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                instagram_url: social.instagram_url || null,
+                facebook_url: social.facebook_url || null,
+                tiktok_url: social.tiktok_url || null,
+                youtube_url: social.youtube_url || null,
+                x_url: social.x_url || null,
+              }),
+            });
+            load();
+            alert("Saved.");
+          }}
+        >
+          Save social links
+        </LuxuryButton>
       </GlassCard>
     </div>
   );

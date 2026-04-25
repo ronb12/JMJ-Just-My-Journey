@@ -63,6 +63,9 @@ export async function DELETE(req: Request) {
   }
   const id = z.string().uuid().parse(new URL(req.url).searchParams.get("id"));
   const sql = getSql();
-  await sql`UPDATE providers SET is_active = false WHERE id = ${id}::uuid`;
+  const del = (await sql`DELETE FROM providers WHERE id = ${id}::uuid RETURNING id`) as { id: string }[];
+  if (!del[0]) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   return NextResponse.json({ ok: true });
 }

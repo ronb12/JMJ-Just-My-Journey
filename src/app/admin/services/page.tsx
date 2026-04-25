@@ -14,7 +14,7 @@ export default async function AdminServices() {
   return (
     <div>
       <h1 className="font-serif text-3xl text-[#1E3A8A]">Services</h1>
-      <p className="text-sm text-slate-500">Add, edit, or soft-delete (deactivate) services.</p>
+      <p className="text-sm text-slate-500">Add, edit, or delete services.</p>
       <ServiceEditor initial={list} />
     </div>
   );

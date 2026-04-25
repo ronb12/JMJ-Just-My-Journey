@@ -1,7 +1,7 @@
 import { getSql, hasDatabase } from "@/lib/db";
 import { getUserSession } from "@/lib/session";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { redirect } from "next/navigation";
+import { CustomerOrdersClient } from "./CustomerOrdersClient";
 
 export const dynamic = "force-dynamic";
 
@@ -23,17 +23,7 @@ export default async function CustomerOrders() {
   return (
     <div>
       <h1 className="font-serif text-3xl text-[#1E3A8A]">Orders</h1>
-      <div className="mt-4 space-y-2">
-        {rows.map((o) => (
-          <GlassCard key={o.id} className="!p-4">
-            <p className="text-slate-800">Order #{o.id.slice(0, 8)}</p>
-            <p className="text-sm text-slate-500">
-              ${o.total_amount} &middot; {o.fulfillment_status} &middot; payment: {o.payment_status}
-            </p>
-          </GlassCard>
-        ))}
-        {rows.length === 0 ? <p className="text-slate-500">No orders yet.</p> : null}
-      </div>
+      <CustomerOrdersClient initial={rows as any} />
     </div>
   );
 }

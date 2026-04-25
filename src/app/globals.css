@@ -15,6 +15,20 @@
   background: linear-gradient(165deg, #eff6ff 0%, #e0f2fe 32%, #f0f9ff 55%, #e0f2fe 100%);
 }
 
+/* Butterfly wing-flap: double-flap burst then rest */
+@keyframes butterfly-flutter {
+  0%, 100%  { transform: scaleX(1) scaleY(1); }
+  8%        { transform: scaleX(0.12) scaleY(1.08); }
+  16%       { transform: scaleX(1) scaleY(1); }
+  24%       { transform: scaleX(0.12) scaleY(1.08); }
+  32%       { transform: scaleX(1) scaleY(1); }
+}
+
+.butterfly-flutter {
+  animation: butterfly-flutter 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
 /* Respect reduced motion: global helper */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -22,7 +36,8 @@
   }
   .float-blob-1,
   .float-blob-2,
-  .float-blob-3 {
+  .float-blob-3,
+  .butterfly-flutter {
     animation: none;
   }
 }

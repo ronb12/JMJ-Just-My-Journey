@@ -1,6 +1,7 @@
 /**
- * Run after migrations: DATABASE_URL, ADMIN_SEED_EMAIL, ADMIN_SEED_PASSWORD in .env
+ * Run after migrations: DATABASE_URL, optional ADMIN_SEED_EMAIL / ADMIN_SEED_PASSWORD
  *   npm run db:seed
+ * Defaults in code are dev-only; override in .env and rotate password for any shared/production DB.
  */
 import { config } from "dotenv";
 import { neon } from "@neondatabase/serverless";
@@ -15,8 +16,8 @@ async function run() {
     throw new Error("DATABASE_URL required");
   }
   const sql = neon(url);
-  const email = (process.env.ADMIN_SEED_EMAIL || "admin@jmj.com").toLowerCase();
-  const pass = process.env.ADMIN_SEED_PASSWORD || "JmjChangeMe!24";
+  const email = (process.env.ADMIN_SEED_EMAIL || "ronellbradley@gmail.com").toLowerCase();
+  const pass = process.env.ADMIN_SEED_PASSWORD || "password1234";
   const h = await hash(pass, 10);
   const existing = (await sql`SELECT id FROM users WHERE lower(email) = ${email}`) as { id: string }[];
   if (!existing[0]) {
@@ -27,8 +28,13 @@ async function run() {
     // eslint-disable-next-line no-console
     console.log("Admin user created:", email);
   } else {
+    await sql`
+      UPDATE users
+      SET password_hash = ${h}, role = 'admin'
+      WHERE id = ${existing[0].id}::uuid
+    `;
     // eslint-disable-next-line no-console
-    console.log("Admin user exists, skipping");
+    console.log("Admin user updated (password/role):", email);
   }
   // Sample providers
   const pc = (await sql`SELECT count(*)::int AS c FROM providers`) as { c: number }[];

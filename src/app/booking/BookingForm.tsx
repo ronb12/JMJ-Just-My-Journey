@@ -25,6 +25,7 @@ export function BookingForm({ services, providers }: { services: S[]; providers:
     price: string;
     serviceName: string;
   } | null>(null);
+  const ready = Boolean(serviceId && date && time);
 
   const service = useMemo(
     () => services.find((x) => x.id === serviceId),
@@ -36,7 +37,10 @@ export function BookingForm({ services, providers }: { services: S[]; providers:
       r.push("/login?callbackUrl=/booking");
       return;
     }
-    if (!serviceId || !date || !time) return;
+    if (!serviceId || !date || !time) {
+      alert("Please select a service, date, and time.");
+      return;
+    }
     setBusy(true);
     const res = await fetch("/api/appointments", {
       method: "POST",
@@ -129,6 +133,7 @@ export function BookingForm({ services, providers }: { services: S[]; providers:
               className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -138,6 +143,7 @@ export function BookingForm({ services, providers }: { services: S[]; providers:
               className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
               value={time}
               onChange={(e) => setTime(e.target.value)}
+              required
             />
           </div>
         </div>
@@ -152,9 +158,12 @@ export function BookingForm({ services, providers }: { services: S[]; providers:
         />
       </BookingStepCard>
       <div className="pt-2">
-        <LuxuryButton type="button" disabled={busy} onClick={onConfirm}>
+        <LuxuryButton type="button" disabled={busy || (status !== "unauthenticated" && !ready)} onClick={onConfirm}>
           {status === "unauthenticated" ? "Log in to continue" : "Review & pay"}
         </LuxuryButton>
+        {status !== "unauthenticated" && !ready ? (
+          <p className="mt-2 text-sm text-slate-500">Select a service, date, and time to continue.</p>
+        ) : null}
       </div>
       {s?.user && appt ? (
         <PaymentSummarySheet

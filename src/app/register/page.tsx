@@ -53,7 +53,7 @@ function Form() {
         }}
       >
         <div>
-          <label className="text-xs text-slate-500">Name</label>
+          <label className="text-sm font-medium text-slate-700">Name</label>
           <input
             className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
             value={name}
@@ -63,7 +63,7 @@ function Form() {
           />
         </div>
         <div>
-          <label className="text-xs text-slate-500">Email</label>
+          <label className="text-sm font-medium text-slate-700">Email</label>
           <input
             type="email"
             className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
@@ -74,7 +74,7 @@ function Form() {
           />
         </div>
         <div>
-          <label className="text-xs text-slate-500">Phone (optional)</label>
+          <label className="text-sm font-medium text-slate-700">Phone (optional)</label>
           <input
             className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
             value={phone}
@@ -83,7 +83,7 @@ function Form() {
           />
         </div>
         <div>
-          <label className="text-xs text-slate-500">Password (8+ characters)</label>
+          <label className="text-sm font-medium text-slate-700">Password (8+ characters)</label>
           <input
             type="password"
             className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"

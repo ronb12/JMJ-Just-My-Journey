@@ -71,3 +71,33 @@ export async function PATCH(req: Request, { params }: Ctx) {
   });
   return NextResponse.json({ ok: true });
 }
+
+export async function DELETE(_req: Request, { params }: Ctx) {
+  const u = await requireUser();
+  if (u.error) {
+    return NextResponse.json({ error: u.error }, { status: 401 });
+  }
+  const { id } = await params;
+  if (!z.string().uuid().safeParse(id).success) {
+    return NextResponse.json({ error: "Invalid" }, { status: 400 });
+  }
+  const sql = getSql();
+  const o = (await sql`
+    SELECT id, user_id, payment_status, fulfillment_status
+    FROM orders
+    WHERE id = ${id}::uuid
+    LIMIT 1
+  `) as { id: string; user_id: string; payment_status: string; fulfillment_status: string }[];
+  if (!o[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (u.user?.role !== "admin" && o[0].user_id !== u.user!.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  if (o[0].payment_status !== "pending") {
+    return NextResponse.json({ error: "Cannot delete an order after payment." }, { status: 409 });
+  }
+  if (o[0].fulfillment_status !== "unfulfilled") {
+    return NextResponse.json({ error: "Only unfulfilled pending orders can be deleted." }, { status: 409 });
+  }
+  await sql`DELETE FROM orders WHERE id = ${id}::uuid`;
+  return NextResponse.json({ ok: true });
+}

@@ -11,8 +11,20 @@ const providers = [
       password: { label: "Password", type: "password" },
     },
     async authorize(cred): Promise<User | null> {
-      if (!hasDatabase()) return null;
-      if (!cred?.email || !cred?.password) return null;
+      if (!hasDatabase()) {
+        if (process.env.NODE_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.error("NextAuth credentials sign-in blocked: missing DATABASE_URL.");
+        }
+        return null;
+      }
+      if (!cred?.email || !cred?.password) {
+        if (process.env.NODE_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.error("NextAuth credentials sign-in rejected: missing email/password fields.");
+        }
+        return null;
+      }
       const email = String(cred.email).toLowerCase();
       const sql = getSql();
       const rows = (await sql`
@@ -29,9 +41,21 @@ const providers = [
         phone: string | null;
       }[];
       const user = rows[0];
-      if (!user || !user.password_hash) return null;
+      if (!user || !user.password_hash) {
+        if (process.env.NODE_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.error("NextAuth credentials sign-in rejected: user not found or no password_hash.");
+        }
+        return null;
+      }
       const ok = await compare(String(cred.password), user.password_hash);
-      if (!ok) return null;
+      if (!ok) {
+        if (process.env.NODE_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.error("NextAuth credentials sign-in rejected: password mismatch.");
+        }
+        return null;
+      }
       return {
         id: user.id,
         email: user.email,
@@ -54,6 +78,7 @@ if (process.env.NODE_ENV === "development" && !hasDatabase() && !secret) {
 
 export const authOptions: NextAuthOptions = {
   providers,
+  debug: process.env.NODE_ENV === "development",
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   secret: secret || "development-fallback-not-for-prod",
   pages: { signIn: "/login" },

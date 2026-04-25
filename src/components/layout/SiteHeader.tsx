@@ -3,6 +3,7 @@
 import { NotificationDropdown } from "@/components/ui/NotificationDropdown";
 import { cn } from "@/lib/cn";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -50,11 +51,17 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/30 bg-white/40 shadow-sm shadow-sky-900/5 backdrop-blur-md">
       <div className="jmj-container flex items-center justify-between py-3">
-        <Link
-          href="/"
-          className="font-serif text-2xl font-semibold tracking-tight text-[#1E3A8A] sm:text-3xl"
-        >
-          JMJ
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/icons/jmj-icon-192.png"
+            alt="JMJ"
+            width={32}
+            height={32}
+            className="butterfly-flutter rounded-lg object-cover"
+          />
+          <span className="font-serif text-2xl font-semibold tracking-tight text-[#1E3A8A] sm:text-3xl">
+            JMJ
+          </span>
         </Link>
         <button
           type="button"

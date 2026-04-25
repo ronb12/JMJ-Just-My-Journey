@@ -34,3 +34,27 @@ export async function GET(_req: Request, { params }: Ctx) {
   `) as unknown[];
   return NextResponse.json({ messages });
 }
+
+export async function DELETE(req: Request, { params }: Ctx) {
+  const u = await requireUser();
+  if (u.error) {
+    return NextResponse.json({ error: u.error }, { status: 401 });
+  }
+  const { conversationId } = await params;
+  if (!z.string().uuid().safeParse(conversationId).success) {
+    return NextResponse.json({ error: "Invalid" }, { status: 400 });
+  }
+  const sql = getSql();
+  const conv = (await sql`
+    SELECT id, customer_id
+    FROM conversations
+    WHERE id = ${conversationId}::uuid
+    LIMIT 1
+  `) as { id: string; customer_id: string }[];
+  if (!conv[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (u.user?.role !== "admin" && conv[0].customer_id !== u.user!.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  await sql`DELETE FROM conversations WHERE id = ${conversationId}::uuid`;
+  return NextResponse.json({ ok: true });
+}

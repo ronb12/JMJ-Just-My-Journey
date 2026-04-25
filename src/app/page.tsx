@@ -1,10 +1,11 @@
 import { FadeIn } from "@/components/ui/FadeIn";
 import { FloatingCard } from "@/components/ui/FloatingCard";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
+import { ProductGlassCard } from "@/components/ui/ProductGlassCard";
 import { getMemberships, getPackages, getProducts, getServices } from "@/lib/data/public";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function HomePage() {
   const [services, products, packs, mems] = await Promise.all([
@@ -17,29 +18,38 @@ export default async function HomePage() {
   const storePrev = products.slice(0, 4);
   return (
     <div>
-      <section className="jmj-container py-20 sm:py-28">
-        <FadeIn>
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-sky-600/90">
-            JMJ — Just My Journey
-          </p>
-          <h1 className="mt-3 max-w-3xl font-serif text-4xl font-semibold leading-tight text-[#1E3A8A] sm:text-5xl md:text-6xl">
-            Your Wellness Journey Starts Here
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-600 sm:text-xl">
-            Book luxury spa services, shop wellness products, and manage your self-care journey in
-            one calming place.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/booking">
-              <LuxuryButton type="button">Book a Session</LuxuryButton>
-            </Link>
-            <Link href="/store">
-              <LuxuryButton type="button" variant="teal">
-                Shop Wellness Products
-              </LuxuryButton>
-            </Link>
-          </div>
-        </FadeIn>
+      {/* Hero — drop your photo at /public/hero.jpg to replace the gradient */}
+      <section
+        className="relative flex min-h-[88vh] items-end overflow-hidden bg-[#0f1e3d]"
+        style={{ backgroundImage: "url('/hero.jpg')", backgroundSize: "cover", backgroundPosition: "center 70%" }}
+      >
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1e3d]/85 via-[#0f1e3d]/30 to-transparent" />
+        {/* Hero content */}
+        <div className="jmj-container relative z-10 pb-16 pt-32 sm:pb-24">
+          <FadeIn>
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-sky-300/90">
+              JMJ — Just My Journey
+            </p>
+            <h1 className="mt-3 max-w-3xl font-serif text-4xl font-semibold leading-tight text-white sm:text-5xl md:text-6xl">
+              Your Wellness Journey Starts Here
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg text-white/80 sm:text-xl">
+              Book luxury spa services, shop wellness products, and manage your self-care journey in
+              one calming place.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/booking">
+                <LuxuryButton type="button">Book a Session</LuxuryButton>
+              </Link>
+              <Link href="/store">
+                <LuxuryButton type="button" variant="teal">
+                  Shop Wellness Products
+                </LuxuryButton>
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
       </section>
       <section className="jmj-container grid gap-4 py-6 md:grid-cols-2 lg:grid-cols-4">
         <Link href="/booking" className="block h-full">
@@ -100,12 +110,16 @@ export default async function HomePage() {
         <h2 className="font-serif text-3xl text-[#1E3A8A]">Wellness store preview</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {storePrev.map((p) => (
-            <div key={String(p.id)} className="text-sm text-slate-600">
-              <p className="font-medium text-slate-800">{String(p.name)}</p>
-              <p className="text-[#2563EB]">
-                {p.price != null ? `$${p.price}` : "—"} · {String(p.category || "Wellness")}
-              </p>
-            </div>
+            <ProductGlassCard
+              key={String(p.id)}
+              id={String(p.id)}
+              name={String(p.name)}
+              price={p.price != null ? String(p.price) : "0"}
+              imageUrl={(p.image_url as string | null) ?? null}
+              category={(p.category as string | null) ?? null}
+              href={`/store/product/${String(p.id)}`}
+              ctaLabel="View"
+            />
           ))}
         </div>
         <div className="mt-4">
@@ -154,7 +168,7 @@ export default async function HomePage() {
       <section className="jmj-container py-12">
         <h2 className="font-serif text-3xl text-[#1E3A8A]">How it works</h2>
         <ol className="mt-4 grid gap-4 md:grid-cols-3">
-          {["Choose a service or product", "Review in your payment sheet", "Relax — we handle the rest"].map(
+          {["Choose a service or product", "Confirm your booking & pay securely", "Relax — we handle the rest"].map(
             (t, i) => (
               <FloatingCard key={t} delay={i * 0.05}>
                 <p className="text-sm font-semibold text-sky-800">Step {i + 1}</p>
@@ -163,20 +177,6 @@ export default async function HomePage() {
             )
           )}
         </ol>
-      </section>
-      <section className="jmj-container py-8">
-        <h2 className="font-serif text-3xl text-[#1E3A8A]">Testimonials</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {[
-            "A sanctuary in the city — the booking flow is effortless.",
-            "The store quality matches the spa. My skin has never been calmer.",
-            "Support replies feel human. JMJ is the standard I recommend.",
-          ].map((q) => (
-            <FloatingCard key={q}>
-              <p className="text-sm leading-relaxed text-slate-700">&ldquo;{q}&rdquo;</p>
-            </FloatingCard>
-          ))}
-        </div>
       </section>
       <section className="jmj-container py-16">
         <FloatingCard className="bg-gradient-to-br from-sky-50/80 to-white/60 text-center">

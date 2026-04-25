@@ -8,7 +8,7 @@ type Row = {
   user_name: string;
   service_name: string;
   email: string;
-  appointment_date: string;
+  appointment_date: string | Date;
   status: string;
   payment_status: string;
 };
@@ -19,6 +19,11 @@ export function BookingsTable({ rows }: { rows: unknown[] }) {
   const [local, setLocal] = useState<Row[]>(
     (rows as Row[]).map((r) => ({ ...r }))
   );
+  const fmtDate = useCallback((v: string | Date) => {
+    if (v instanceof Date) return v.toLocaleDateString();
+    const d = new Date(v);
+    return Number.isNaN(d.getTime()) ? String(v) : d.toLocaleDateString();
+  }, []);
   const save = useCallback(
     async (id: string, status: (typeof statuses)[number]) => {
       const res = await fetch("/api/appointments", {
@@ -54,7 +59,7 @@ export function BookingsTable({ rows }: { rows: unknown[] }) {
                 <span className="text-xs text-slate-500">{r.email}</span>
               </td>
               <td className="p-2">{r.service_name}</td>
-              <td className="p-2 whitespace-nowrap">{r.appointment_date}</td>
+              <td className="p-2 whitespace-nowrap">{fmtDate(r.appointment_date)}</td>
               <td className="p-2">{r.status}</td>
               <td className="p-2">{r.payment_status}</td>
               <td className="p-2">

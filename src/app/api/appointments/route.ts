@@ -91,29 +91,40 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  const u = await requireAdmin();
+  const u = await requireUser();
   if (u.error) {
-    return NextResponse.json({ error: u.error }, { status: u.error === "Forbidden" ? 403 : 401 });
+    return NextResponse.json({ error: u.error }, { status: 401 });
   }
   const b = z
     .object({
       id: z.string().uuid(),
+      // Admin-only
       status: z.enum(["pending", "confirmed", "completed", "cancelled"]).optional(),
+      // Customer/admin editable fields (restricted by ownership + payment status)
+      appointmentDate: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/).optional(),
+      appointmentTime: z.string().regex(/^\\d{2}:\\d{2}/).optional(),
+      providerId: z.string().uuid().nullable().optional(),
+      notes: z.string().max(2000).nullable().optional(),
     })
     .parse(await req.json().catch(() => ({})));
-  if (!b.status) {
-    return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
-  }
+
   const sql = getSql();
-  const row = (await sql`SELECT id, user_id, service_id FROM appointments WHERE id = ${b.id}::uuid LIMIT 1`) as {
-    id: string;
-    user_id: string;
-  }[];
-  if (!row[0]) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  await sql`UPDATE appointments SET status = ${b.status}, updated_at = now() WHERE id = ${b.id}::uuid`;
+  const row = (await sql`
+    SELECT id, user_id, payment_status, status
+    FROM appointments
+    WHERE id = ${b.id}::uuid
+    LIMIT 1
+  `) as { id: string; user_id: string; payment_status: string; status: string }[];
+  if (!row[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const isAdmin = u.user?.role === "admin";
+  const isOwner = row[0].user_id === u.user!.id;
+  if (!isAdmin && !isOwner) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  // Admin status updates
   if (b.status) {
+    if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    await sql`UPDATE appointments SET status = ${b.status}, updated_at = now() WHERE id = ${b.id}::uuid`;
     const titles: Record<string, string> = {
       confirmed: "Booking confirmed",
       completed: "Appointment completed",
@@ -126,6 +137,67 @@ export async function PATCH(req: Request) {
       type: `booking_${b.status}`,
       linkUrl: "/dashboard/bookings",
     });
+    return NextResponse.json({ ok: true });
   }
+
+  // Customer edits: only for unpaid/pending bookings
+  const hasCustomerEdits =
+    b.appointmentDate || b.appointmentTime || b.providerId !== undefined || b.notes !== undefined;
+  if (!hasCustomerEdits) {
+    return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
+  }
+  if (!isOwner && !isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (row[0].payment_status !== "pending") {
+    return NextResponse.json({ error: "Cannot edit a booking after payment." }, { status: 409 });
+  }
+  if (row[0].status !== "pending") {
+    return NextResponse.json({ error: "Only pending bookings can be edited." }, { status: 409 });
+  }
+
+  if (b.providerId) {
+    const pr = (await sql`SELECT id FROM providers WHERE id = ${b.providerId}::uuid AND is_active = true`) as {
+      id: string;
+    }[];
+    if (!pr[0]) return NextResponse.json({ error: "Provider not found" }, { status: 400 });
+  }
+
+  await sql`
+    UPDATE appointments SET
+      appointment_date = COALESCE(${b.appointmentDate ?? null}::date, appointment_date),
+      appointment_time = COALESCE(${b.appointmentTime ?? null}::time, appointment_time),
+      provider_id = ${b.providerId === undefined ? null : b.providerId}::uuid,
+      notes = COALESCE(${b.notes ?? null}, notes),
+      updated_at = now()
+    WHERE id = ${b.id}::uuid
+  `;
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req: Request) {
+  const u = await requireUser();
+  if (u.error) {
+    return NextResponse.json({ error: u.error }, { status: 401 });
+  }
+  const id = z.string().uuid().parse(new URL(req.url).searchParams.get("id"));
+  const sql = getSql();
+  const row = (await sql`
+    SELECT id, user_id, payment_status, status
+    FROM appointments
+    WHERE id = ${id}::uuid
+    LIMIT 1
+  `) as { id: string; user_id: string; payment_status: string; status: string }[];
+  if (!row[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const isAdmin = u.user?.role === "admin";
+  const isOwner = row[0].user_id === u.user!.id;
+  if (!isAdmin && !isOwner) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (row[0].payment_status !== "pending") {
+    return NextResponse.json({ error: "Cannot delete a booking after payment." }, { status: 409 });
+  }
+  if (row[0].status !== "pending") {
+    return NextResponse.json({ error: "Only pending bookings can be deleted." }, { status: 409 });
+  }
+
+  await sql`DELETE FROM appointments WHERE id = ${id}::uuid`;
   return NextResponse.json({ ok: true });
 }

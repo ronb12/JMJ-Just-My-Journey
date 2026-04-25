@@ -43,11 +43,11 @@ export default function ContactPage() {
             }}
           >
             <div>
-              <label className="text-xs text-slate-500">Name</label>
+              <label className="text-sm font-medium text-slate-700">Name</label>
               <input name="name" required className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2" />
             </div>
             <div>
-              <label className="text-xs text-slate-500">Email</label>
+              <label className="text-sm font-medium text-slate-700">Email</label>
               <input
                 name="email"
                 type="email"
@@ -56,11 +56,11 @@ export default function ContactPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-slate-500">Phone (optional)</label>
+              <label className="text-sm font-medium text-slate-700">Phone (optional)</label>
               <input name="phone" className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2" />
             </div>
             <div>
-              <label className="text-xs text-slate-500">Message</label>
+              <label className="text-sm font-medium text-slate-700">Message</label>
               <textarea
                 name="message"
                 required

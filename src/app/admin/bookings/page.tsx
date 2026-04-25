@@ -1,6 +1,7 @@
 import { getSql, hasDatabase } from "@/lib/db";
 import { getUserSession } from "@/lib/session";
 import { BookingsTable } from "./BookingsTable";
+import { AdminBookingForm } from "./AdminBookingForm";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,9 @@ export default async function AdminBookings() {
   return (
     <div>
       <h1 className="font-serif text-3xl text-[#1E3A8A]">All bookings</h1>
+      <div className="mt-4">
+        <AdminBookingForm />
+      </div>
       <BookingsTable rows={rows} />
     </div>
   );

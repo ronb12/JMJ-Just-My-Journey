@@ -1,0 +1,92 @@
+"use client";
+
+import { LuxuryButton } from "@/components/ui/LuxuryButton";
+import { cn } from "@/lib/cn";
+
+type Conv = { id: string; subject: string; updated_at: string; unread?: number };
+
+function fmtDate(s: string) {
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? s : d.toLocaleString();
+}
+
+export function MessagesInboxTable({
+  convs,
+  activeId,
+  onOpen,
+  onDelete,
+}: {
+  convs: Conv[];
+  activeId: string | null;
+  onOpen: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <div className="overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+      <table className="w-full min-w-[520px] text-left text-sm">
+        <thead className="bg-sky-50/50 text-slate-600">
+          <tr>
+            <th className="p-2">Subject</th>
+            <th className="p-2 whitespace-nowrap">Updated</th>
+            <th className="p-2 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {convs.map((c) => (
+            <tr
+              key={c.id}
+              className={cn(
+                "border-t border-sky-100/50",
+                activeId === c.id && "bg-white/40"
+              )}
+            >
+              <td className="p-2">
+                <button type="button" className="w-full text-left" onClick={() => onOpen(c.id)}>
+                  <div className="flex items-center gap-2">
+                    <span className="truncate font-medium text-slate-800 hover:underline">
+                      {c.subject}
+                    </span>
+                    {(c.unread ?? 0) > 0 ? (
+                      <span className="rounded-full bg-[#2563EB] px-2 py-0.5 text-[10px] font-semibold text-white">
+                        {c.unread}
+                      </span>
+                    ) : null}
+                  </div>
+                </button>
+              </td>
+              <td className="p-2 whitespace-nowrap text-xs text-slate-500">{fmtDate(c.updated_at)}</td>
+              <td className="p-2">
+                <div className="flex justify-end gap-2">
+                  <LuxuryButton
+                    type="button"
+                    variant="ghost"
+                    className="!px-3 !py-1.5 text-xs"
+                    onClick={() => onOpen(c.id)}
+                  >
+                    Open
+                  </LuxuryButton>
+                  <LuxuryButton
+                    type="button"
+                    variant="ghost"
+                    className="!px-3 !py-1.5 text-xs"
+                    onClick={() => onDelete(c.id)}
+                  >
+                    Delete
+                  </LuxuryButton>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {convs.length === 0 ? (
+            <tr>
+              <td className="p-3 text-slate-500" colSpan={3}>
+                No conversations yet.
+              </td>
+            </tr>
+          ) : null}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+

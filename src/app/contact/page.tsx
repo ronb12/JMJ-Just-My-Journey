@@ -12,7 +12,9 @@ export default function ContactPage() {
     <div className="jmj-container max-w-lg py-12">
       <FadeIn>
         <h1 className="font-serif text-4xl text-[#1E3A8A]">Contact</h1>
-        <p className="mt-2 text-slate-600">We read every message and reply during studio hours.</p>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">
+          We read every message and reply during studio hours.
+        </p>
       </FadeIn>
       <GlassCard className="mt-6">
         {sent ? (
@@ -42,30 +44,30 @@ export default function ContactPage() {
               }
             }}
           >
-            <div>
-              <label className="text-sm font-medium text-slate-700">Name</label>
-              <input name="name" required className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2" />
+            <div className="jmj-field-block">
+              <label className="jmj-label">Name</label>
+              <input name="name" required className="jmj-input" />
             </div>
-            <div>
-              <label className="text-sm font-medium text-slate-700">Email</label>
+            <div className="jmj-field-block">
+              <label className="jmj-label">Email</label>
               <input
                 name="email"
                 type="email"
                 required
-                className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
+                className="jmj-input"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-slate-700">Phone (optional)</label>
-              <input name="phone" className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2" />
+            <div className="jmj-field-block">
+              <label className="jmj-label">Phone (optional)</label>
+              <input name="phone" className="jmj-input" />
             </div>
-            <div>
-              <label className="text-sm font-medium text-slate-700">Message</label>
+            <div className="jmj-field-block">
+              <label className="jmj-label">Message</label>
               <textarea
                 name="message"
                 required
                 minLength={5}
-                className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
+                className="jmj-textarea"
                 rows={4}
               />
             </div>

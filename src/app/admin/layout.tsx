@@ -40,7 +40,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               <Link
                 key={l.href}
                 href={l.href}
-                className="rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-rose-50/40"
+                className="rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-rose-50/40 dark:text-slate-200 dark:hover:bg-white/5"
               >
                 {l.label}
               </Link>

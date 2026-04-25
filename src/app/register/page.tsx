@@ -20,7 +20,7 @@ function Form() {
   return (
     <GlassCard className="mx-auto max-w-md">
       <h1 className="font-serif text-3xl text-[#1E3A8A]">Create account</h1>
-      <p className="mt-1 text-sm text-slate-600">Join JMJ and start planning your self-care.</p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Join JMJ and start planning your self-care.</p>
       <form
         className="mt-4 space-y-3"
         onSubmit={async (e) => {
@@ -52,41 +52,41 @@ function Form() {
           r.push(s?.url || cb);
         }}
       >
-        <div>
-          <label className="text-sm font-medium text-slate-700">Name</label>
+        <div className="jmj-field-block">
+          <label className="jmj-label">Name</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
+            className="jmj-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             autoComplete="name"
           />
         </div>
-        <div>
-          <label className="text-sm font-medium text-slate-700">Email</label>
+        <div className="jmj-field-block">
+          <label className="jmj-label">Email</label>
           <input
             type="email"
-            className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
+            className="jmj-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
           />
         </div>
-        <div>
-          <label className="text-sm font-medium text-slate-700">Phone (optional)</label>
+        <div className="jmj-field-block">
+          <label className="jmj-label">Phone (optional)</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
+            className="jmj-input"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             autoComplete="tel"
           />
         </div>
-        <div>
-          <label className="text-sm font-medium text-slate-700">Password (8+ characters)</label>
+        <div className="jmj-field-block">
+          <label className="jmj-label">Password (8+ characters)</label>
           <input
             type="password"
-            className="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2"
+            className="jmj-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -99,7 +99,7 @@ function Form() {
           {busy ? "…" : "Create account"}
         </LuxuryButton>
       </form>
-      <p className="mt-3 text-center text-sm text-slate-600">
+      <p className="mt-3 text-center text-sm text-slate-600 dark:text-slate-300">
         Already a member?{" "}
         <Link className="text-[#2563EB] underline" href={"/login?callbackUrl=" + encodeURIComponent(cb)}>
           Sign in

@@ -15,6 +15,7 @@ function Form() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   return (
@@ -30,7 +31,13 @@ function Form() {
           const res = await fetch("/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password, phone: phone || undefined }),
+            body: JSON.stringify({
+              name,
+              email,
+              password,
+              phone: phone || undefined,
+              address: address.trim() || undefined,
+            }),
           });
           if (!res.ok) {
             const j = (await res.json().catch(() => ({}))) as { error?: string };
@@ -80,6 +87,16 @@ function Form() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             autoComplete="tel"
+          />
+        </div>
+        <div className="jmj-field-block">
+          <label className="jmj-label">Address (optional)</label>
+          <textarea
+            className="jmj-textarea"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            rows={3}
+            autoComplete="street-address"
           />
         </div>
         <div className="jmj-field-block">

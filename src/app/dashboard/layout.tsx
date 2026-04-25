@@ -10,7 +10,7 @@ const links: { href: string; label: string }[] = [
   { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/messages", label: "Messages" },
   { href: "/dashboard/notifications", label: "Notifications" },
-  { href: "/dashboard/profile", label: "Profile" },
+  { href: "/dashboard/profile", label: "Account" },
 ];
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {

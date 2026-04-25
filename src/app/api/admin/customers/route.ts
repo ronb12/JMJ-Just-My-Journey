@@ -10,7 +10,7 @@ export async function GET() {
   }
   const sql = getSql();
   const rows = (await sql`
-    SELECT id, name, email, phone, role, created_at
+    SELECT id, name, email, phone, address, role, created_at
     FROM users
     WHERE role = 'customer'
     ORDER BY created_at DESC
@@ -24,6 +24,7 @@ const patchBody = z.object({
   name: z.string().min(1).optional().nullable(),
   email: z.string().email().optional().nullable(),
   phone: z.string().min(1).optional().nullable(),
+  address: z.string().max(4000).optional().nullable(),
 });
 
 export async function PATCH(req: Request) {
@@ -44,6 +45,15 @@ export async function PATCH(req: Request) {
       updated_at = now()
     WHERE id = ${b.id}::uuid
   `;
+  if (b.address !== undefined) {
+    const nextAddress = b.address && b.address.trim() ? b.address.trim() : null;
+    await sql`
+      UPDATE users SET
+        address = ${nextAddress},
+        updated_at = now()
+      WHERE id = ${b.id}::uuid
+    `;
+  }
   return NextResponse.json({ ok: true });
 }
 

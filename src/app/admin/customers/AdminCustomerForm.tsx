@@ -23,6 +23,10 @@ export function AdminCustomerForm() {
         name: fd.get("name"),
         email: fd.get("email"),
         phone: fd.get("phone") || undefined,
+        address: (() => {
+          const v = fd.get("address");
+          return typeof v === "string" && v.trim() ? v.trim() : undefined;
+        })(),
         password: fd.get("password"),
       }),
     });
@@ -62,6 +66,15 @@ export function AdminCustomerForm() {
           <div className="jmj-field-block">
             <label className="jmj-label">Phone (optional)</label>
             <input name="phone" type="tel" className="jmj-input" placeholder="+1 (555) 000-0000" />
+          </div>
+          <div className="jmj-field-block">
+            <label className="jmj-label">Address (optional)</label>
+            <textarea
+              name="address"
+              rows={3}
+              className="jmj-textarea"
+              placeholder="Street, city, state, ZIP"
+            />
           </div>
           <div className="jmj-field-block">
             <label className="jmj-label">Temporary password (8+ characters)</label>

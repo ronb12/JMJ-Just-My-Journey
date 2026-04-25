@@ -11,11 +11,14 @@ export default async function AdminCustomers() {
   if (s?.user?.role !== "admin") {
     redirect("/");
   }
-  let list: { id: string; name: string | null; email: string; created_at: string }[] = [];
+  let list: { id: string; name: string | null; email: string; address: string | null; created_at: string }[] = [];
   if (hasDatabase()) {
     const sql = getSql();
     const rows = (await sql`
-      SELECT id, name, email, created_at FROM users WHERE role = 'customer' ORDER BY created_at DESC
+      SELECT id, name, email, address, created_at
+      FROM users
+      WHERE role = 'customer'
+      ORDER BY created_at DESC
     `) as typeof list;
     list = rows;
   }

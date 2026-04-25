@@ -4,6 +4,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
 import { useState } from "react";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { NewsletterSignup } from "@/components/newsletter/NewsletterSignup";
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
@@ -76,6 +77,15 @@ export default function ContactPage() {
             </LuxuryButton>
           </form>
         )}
+      </GlassCard>
+      <GlassCard className="mt-6">
+        <h2 className="font-serif text-xl text-[#1E3A8A]">Stay in the loop</h2>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          Occasional wellness tips and special offers. No pressure.
+        </p>
+        <div className="mt-4">
+          <NewsletterSignup source="contact" compact />
+        </div>
       </GlassCard>
     </div>
   );

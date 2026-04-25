@@ -328,7 +328,8 @@ export function OrderAdmin({ rows }: { rows: unknown[] }) {
 
             {err ? <p className="text-sm text-red-600 dark:text-red-400">{err}</p> : null}
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Requires env vars: <code>EASYPOST_API_KEY</code> + <code>EASYPOST_FROM_*</code>.
+              Configure <code>EASYPOST_API_KEY</code> and ship-from in{" "}
+              <strong>Admin → Settings → EasyPost &amp; shipping</strong>, or set the same in your host env (e.g. Vercel).
             </p>
           </div>
         ) : null}

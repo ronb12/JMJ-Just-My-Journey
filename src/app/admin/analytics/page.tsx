@@ -42,6 +42,8 @@ export default async function AdminAnalyticsPage() {
 
   let abandonedNow = 0;
   let totalEvents7d = 0;
+  let signedInVisitors7d = 0;
+  let guestEvents7d = 0;
   let uniqueEventTypes7d = 0;
   let reminders7d = 0;
   let last7: Row[] = [];
@@ -65,6 +67,22 @@ export default async function AdminAnalyticsPage() {
         WHERE created_at > (now() - interval '7 days')
       `) as { c: number }[];
       totalEvents7d = t7[0]?.c ?? 0;
+
+      const s7 = (await sql`
+        SELECT COUNT(DISTINCT user_id)::int AS c
+        FROM analytics_events
+        WHERE created_at > (now() - interval '7 days')
+          AND user_id IS NOT NULL
+      `) as { c: number }[];
+      signedInVisitors7d = s7[0]?.c ?? 0;
+
+      const g7 = (await sql`
+        SELECT COUNT(*)::int AS c
+        FROM analytics_events
+        WHERE created_at > (now() - interval '7 days')
+          AND user_id IS NULL
+      `) as { c: number }[];
+      guestEvents7d = g7[0]?.c ?? 0;
 
       const u7 = (await sql`
         SELECT COUNT(DISTINCT name)::int AS c
@@ -136,9 +154,14 @@ export default async function AdminAnalyticsPage() {
               still have at least one product but haven’t been touched for 24 hours—helpful to see who may need a nudge.
             </li>
             <li>
-              <strong className="font-medium text-slate-700 dark:text-slate-300">Tracked actions (past week):</strong> a running total
-              of steps the site records (visits, cart use, checkout, and similar). A higher number usually means more traffic
-              or more shopping steps.
+              <strong className="font-medium text-slate-700 dark:text-slate-300">“Different people (signed in)”</strong> counts how many
+              customer accounts did something in the store this week—one per person.{" "}
+              <strong className="font-medium text-slate-700 dark:text-slate-300">Guests</strong> browsing without an account
+              are not counted as people here; their activity still appears in the feed and in “total steps.”
+            </li>
+            <li>
+              <strong className="font-medium text-slate-700 dark:text-slate-300">Total store steps (past week):</strong> every
+              action the site records (each cart open, click, checkout step, etc.)—so one shopper can add several steps.
             </li>
             <li>
               <strong className="font-medium text-slate-700 dark:text-slate-300">“Guest” in the list:</strong> the person wasn’t
@@ -168,9 +191,13 @@ export default async function AdminAnalyticsPage() {
           hint="Has items, no activity in 24 hours"
         />
         <StatGlassCard
-          label="Tracked steps (past 7 days)"
-          value={totalEvents7d.toLocaleString()}
-          hint="Add-to-cart, page views, checkout, etc."
+          label="Different people in the store (signed in, 7 days)"
+          value={signedInVisitors7d.toLocaleString()}
+          hint={
+            totalEvents7d > 0
+              ? `${totalEvents7d.toLocaleString()} total store steps; ${guestEvents7d.toLocaleString()} from browsers not signed in.`
+              : "Each signed-in person is counted once when they do something in the store."
+          }
         />
         <StatGlassCard
           label="Types of activity (7 days)"

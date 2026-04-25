@@ -1,6 +1,7 @@
 "use client";
 
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
+import { NewsletterAppIcon } from "@/components/newsletter/NewsletterBrandedPreview";
 import { useState } from "react";
 
 type Source = "footer" | "contact" | "account" | "other";
@@ -52,6 +53,10 @@ export function NewsletterSignup({
   if (compact) {
     return (
       <form className={className} onSubmit={submit}>
+        <div className="mb-2 flex items-center gap-2">
+          <NewsletterAppIcon size={28} className="rounded-lg shadow-sm" />
+          <span className="text-sm font-semibold text-[#1E3A8A] dark:text-sky-200">Email updates</span>
+        </div>
         <label className="jmj-label sr-only" htmlFor={`jmj-newsletter-${source}-compact`}>
           Email for updates
         </label>
@@ -79,10 +84,15 @@ export function NewsletterSignup({
 
   return (
     <div className={className}>
-      <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">Newsletter</p>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-        Tips, offers, and calm in your inbox.
-      </p>
+      <div className="flex items-start gap-3">
+        <NewsletterAppIcon size={40} className="mt-0.5 shrink-0 rounded-2xl shadow-sm" />
+        <div className="min-w-0">
+          <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">Newsletter</p>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            Tips, offers, and calm in your inbox.
+          </p>
+        </div>
+      </div>
       <form className="mt-3 space-y-2" onSubmit={submit}>
         <div className="jmj-field-block">
           <label className="jmj-label" htmlFor={`jmj-newsletter-${source}`}>
@@ -109,3 +119,4 @@ export function NewsletterSignup({
     </div>
   );
 }
+

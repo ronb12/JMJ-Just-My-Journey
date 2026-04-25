@@ -44,7 +44,16 @@ export default async function AdminNewsletterPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl text-[#1E3A8A]">Newsletter</h1>
+      <div className="flex flex-wrap items-center gap-3">
+        <img
+          src="/icons/jmj-icon-192.png"
+          width={44}
+          height={44}
+          className="rounded-2xl shadow-sm dark:shadow-white/5"
+          alt=""
+        />
+        <h1 className="font-serif text-3xl text-[#1E3A8A]">Newsletter</h1>
+      </div>
       <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
         <strong className="font-medium text-slate-700 dark:text-slate-200">Create &amp; history</strong> is where you write
         campaigns and track draft / sent (record-keeping).{" "}

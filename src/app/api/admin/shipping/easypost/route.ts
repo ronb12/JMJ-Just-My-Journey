@@ -83,8 +83,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const ep = getEasyPostClient();
-    const from = getEasyPostFromAddress();
+    const ep = await getEasyPostClient();
+    const from = await getEasyPostFromAddress();
 
     const shipment = await ep.Shipment.create({
       to_address: {
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
 
   if (action === "buy") {
     const b = buySchema.parse(await req.json().catch(() => ({})));
-    const ep = getEasyPostClient();
+    const ep = await getEasyPostClient();
     const shipment = await ep.Shipment.retrieve(b.shipmentId);
     const rate = (shipment.rates || []).find((r) => (r as { id?: string }).id === b.rateId);
     if (!rate) return NextResponse.json({ error: "Rate not found on shipment" }, { status: 404 });

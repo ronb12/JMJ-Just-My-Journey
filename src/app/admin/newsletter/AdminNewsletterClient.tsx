@@ -3,6 +3,12 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
 import { Modal } from "@/components/ui/Modal";
+import {
+  buildBrandedNewsletterHtml,
+  getNewsletterAppOrigin,
+  NewsletterAppIcon,
+  NewsletterBrandedPreview,
+} from "@/components/newsletter/NewsletterBrandedPreview";
 import { useCallback, useEffect, useState } from "react";
 
 export type SubRow = { id: string; email: string; source: string | null; created_at: string };
@@ -220,11 +226,17 @@ export function AdminNewsletterClient({
             </LuxuryButton>
           </div>
           <GlassCard>
-            <h2 className="font-serif text-xl text-[#1E3A8A] dark:text-sky-200">Write a newsletter</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Composed in JMJ, sent manually for now. Your recipient list is the people above. Copy subject and body to
-              Mailchimp, Resend, or any ESP, then paste those emails from the Subscribers tab.
-            </p>
+            <div className="flex flex-wrap items-start gap-3">
+              <NewsletterAppIcon size={44} className="shrink-0 rounded-2xl shadow-sm" />
+              <div className="min-w-0">
+                <h2 className="font-serif text-xl text-[#1E3A8A] dark:text-sky-200">Write a newsletter</h2>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                  Composed in JMJ, sent manually for now. The app icon appears in the live preview and in{" "}
+                  <strong className="font-medium text-slate-700 dark:text-slate-200">Copy HTML (with app icon)</strong> for
+                  your ESP. Your list is the audience count above. Copy individual emails from the Subscribers tab.
+                </p>
+              </div>
+            </div>
             <form className="mt-4 space-y-3" onSubmit={createNewsletter}>
               <div className="jmj-field-block">
                 <label className="jmj-label" htmlFor="nl-title">
@@ -255,6 +267,10 @@ export function AdminNewsletterClient({
                 />
               </div>
               <div className="jmj-field-block">
+                <p className="jmj-label">Preview (with app icon)</p>
+                <NewsletterBrandedPreview subjectLine={subjectLine} body={body} className="mt-1" />
+              </div>
+              <div className="jmj-field-block">
                 <label className="jmj-label" htmlFor="nl-body">
                   Message body
                 </label>
@@ -268,9 +284,24 @@ export function AdminNewsletterClient({
                 />
               </div>
               {formErr ? <p className="text-sm text-rose-600 dark:text-rose-400">{formErr}</p> : null}
-              <LuxuryButton type="submit" disabled={busy}>
-                {busy ? "Saving…" : "Save as draft"}
-              </LuxuryButton>
+              <div className="flex flex-wrap items-center gap-2">
+                <LuxuryButton type="submit" disabled={busy}>
+                  {busy ? "Saving…" : "Save as draft"}
+                </LuxuryButton>
+                <LuxuryButton
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    const origin = getNewsletterAppOrigin();
+                    if (!origin) return;
+                    void navigator.clipboard.writeText(
+                      buildBrandedNewsletterHtml({ subject: subjectLine, body, origin })
+                    );
+                  }}
+                >
+                  Copy HTML (with app icon)
+                </LuxuryButton>
+              </div>
             </form>
           </GlassCard>
 
@@ -429,6 +460,13 @@ export function AdminNewsletterClient({
       <Modal open={Boolean(editing)} title="Edit newsletter" onClose={() => setEditing(null)}>
         {editing ? (
           <div className="space-y-3">
+            <div className="flex items-center gap-3 border-b border-slate-200 pb-3 dark:border-white/10">
+              <NewsletterAppIcon size={40} className="rounded-2xl shadow-sm" />
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Branded for readers</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300">The JMJ app icon is included in preview and full HTML copy.</p>
+              </div>
+            </div>
             <div className="jmj-field-block">
               <label className="jmj-label">Title</label>
               <input className="jmj-input" value={eTitle} onChange={(e) => setETitle(e.target.value)} maxLength={200} />
@@ -441,6 +479,10 @@ export function AdminNewsletterClient({
                 onChange={(e) => setESubject(e.target.value)}
                 maxLength={300}
               />
+            </div>
+            <div className="jmj-field-block">
+              <p className="jmj-label">Preview (with app icon)</p>
+              <NewsletterBrandedPreview subjectLine={eSubject} body={eBody} className="mt-1" />
             </div>
             <div className="jmj-field-block">
               <label className="jmj-label">Body</label>
@@ -463,6 +505,20 @@ export function AdminNewsletterClient({
                   onClick={() => void navigator.clipboard.writeText(eSubject)}
                 >
                   Copy subject
+                </LuxuryButton>
+                <LuxuryButton
+                  type="button"
+                  variant="ghost"
+                  className="!text-xs"
+                  onClick={() => {
+                    const origin = getNewsletterAppOrigin();
+                    if (!origin) return;
+                    void navigator.clipboard.writeText(
+                      buildBrandedNewsletterHtml({ subject: eSubject, body: eBody, origin })
+                    );
+                  }}
+                >
+                  Copy HTML (with app icon)
                 </LuxuryButton>
               </div>
               {eErr ? <p className="text-xs text-rose-600">{eErr}</p> : <span className="text-xs text-slate-500" />}

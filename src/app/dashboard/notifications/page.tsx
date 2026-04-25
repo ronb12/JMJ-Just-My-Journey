@@ -46,7 +46,7 @@ export default function NotificationsPage() {
         </LuxuryButton>
       </div>
       <div className="mt-4 space-y-3">
-        <div className="overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
           <table className="w-full min-w-[920px] text-left text-sm">
             <thead className="bg-sky-50/50 text-slate-600">
               <tr>
@@ -61,7 +61,7 @@ export default function NotificationsPage() {
               {list.map((n) => (
                 <tr key={n.id} className="border-t border-sky-100/50">
                   <td className="p-2 font-medium text-slate-800">{n.title}</td>
-                  <td className="p-2 text-slate-600">{n.message}</td>
+                  <td className="p-2 whitespace-pre-wrap text-slate-800">{n.message}</td>
                   <td className="p-2 whitespace-nowrap text-xs text-slate-500">{fmtDate(n.created_at)}</td>
                   <td className="p-2">{n.is_read ? "yes" : "no"}</td>
                   <td className="p-2">

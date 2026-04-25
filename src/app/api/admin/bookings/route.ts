@@ -57,3 +57,30 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ id: n[0].id });
 }
+
+export async function DELETE(req: Request) {
+  const u = await requireUser();
+  if (u.error || u.user?.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const id = z.string().uuid().parse(new URL(req.url).searchParams.get("id"));
+  const sql = getSql();
+  try {
+    const del = (await sql`
+      DELETE FROM appointments
+      WHERE id = ${id}::uuid
+      RETURNING id
+    `) as { id: string }[];
+    if (!del[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ ok: true });
+  } catch (e: unknown) {
+    const err = e as { code?: string };
+    if (err?.code === "23503") {
+      return NextResponse.json(
+        { error: "Cannot delete booking because it has related records." },
+        { status: 409 }
+      );
+    }
+    throw e;
+  }
+}

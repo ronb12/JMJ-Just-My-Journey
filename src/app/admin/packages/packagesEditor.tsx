@@ -16,7 +16,7 @@ export function PackagesEditor({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="bg-sky-50/50 text-slate-600">
             <tr>
@@ -107,41 +107,52 @@ function PackageForm({ initial, onSaved }: { initial?: Row; onSaved: () => void 
   const [price, setPrice] = useState(initial?.price || "199");
   const [busy, setBusy] = useState(false);
   return (
-    <div className="mt-2 space-y-2 text-sm">
-      <input
-        className="w-full rounded-xl border border-white/40 bg-white/50 px-2 py-1"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Name"
-      />
-      <input
-        className="w-full rounded-xl border border-white/40 bg-white/50 px-2 py-1"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Price"
-      />
-      <LuxuryButton
-        type="button"
-        disabled={busy}
-        onClick={async () => {
-          if (!name.trim()) return alert("Name required");
-          setBusy(true);
-          const res = await fetch("/api/packages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: initial?.id, name, price: parseFloat(price) || 0, is_active: true }),
-          });
-          setBusy(false);
-          if (!res.ok) {
-            const j = (await res.json().catch(() => ({}))) as { error?: string };
-            alert(j.error || "Could not save");
-            return;
-          }
-          onSaved();
-        }}
-      >
-        {busy ? "Saving…" : initial ? "Save changes" : "Save"}
-      </LuxuryButton>
+    <div className="space-y-4">
+      <div className="grid gap-3 text-sm sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <label className="text-xs font-medium text-slate-600">Package name</label>
+          <input
+            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Relax & Restore Package"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-xs font-medium text-slate-600">Price (USD)</label>
+          <input
+            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            placeholder="199"
+            inputMode="decimal"
+          />
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <LuxuryButton
+          type="button"
+          disabled={busy}
+          onClick={async () => {
+            if (!name.trim()) return alert("Name required");
+            setBusy(true);
+            const res = await fetch("/api/packages", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: initial?.id, name, price: parseFloat(price) || 0, is_active: true }),
+            });
+            setBusy(false);
+            if (!res.ok) {
+              const j = (await res.json().catch(() => ({}))) as { error?: string };
+              alert(j.error || "Could not save");
+              return;
+            }
+            onSaved();
+          }}
+        >
+          {busy ? "Saving…" : initial ? "Save changes" : "Save package"}
+        </LuxuryButton>
+      </div>
     </div>
   );
 }

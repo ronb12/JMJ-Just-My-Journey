@@ -1,6 +1,7 @@
 "use client";
 
 import { GlassCard } from "@/components/ui/GlassCard";
+import { LuxuryButton } from "@/components/ui/LuxuryButton";
 import { useCallback, useState } from "react";
 
 type Row = {
@@ -48,6 +49,7 @@ export function BookingsTable({ rows }: { rows: unknown[] }) {
             <th className="p-2">Status</th>
             <th className="p-2">Pay</th>
             <th className="p-2">Set status</th>
+            <th className="p-2 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -79,6 +81,27 @@ export function BookingsTable({ rows }: { rows: unknown[] }) {
                     </option>
                   ))}
                 </select>
+              </td>
+              <td className="p-2">
+                <div className="flex justify-end">
+                  <LuxuryButton
+                    type="button"
+                    variant="ghost"
+                    className="!px-3 !py-1.5 text-xs"
+                    onClick={async () => {
+                      if (!confirm("Delete this booking? This cannot be undone.")) return;
+                      const res = await fetch("/api/admin/bookings?id=" + r.id, { method: "DELETE" });
+                      if (!res.ok) {
+                        const j = (await res.json().catch(() => ({}))) as { error?: string };
+                        alert(j.error || "Could not delete");
+                        return;
+                      }
+                      setLocal((prev) => prev.filter((x) => x.id !== r.id));
+                    }}
+                  >
+                    Delete
+                  </LuxuryButton>
+                </div>
               </td>
             </tr>
           ))}

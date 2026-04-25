@@ -22,7 +22,7 @@ export function MessagesInboxTable({
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+    <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
       <table className="w-full min-w-[520px] text-left text-sm">
         <thead className="bg-sky-50/50 text-slate-600">
           <tr>
@@ -37,7 +37,7 @@ export function MessagesInboxTable({
               key={c.id}
               className={cn(
                 "border-t border-sky-100/50",
-                activeId === c.id && "bg-white/40"
+                activeId === c.id && "bg-sky-50/60"
               )}
             >
               <td className="p-2">

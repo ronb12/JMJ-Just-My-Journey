@@ -1,4 +1,5 @@
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { GradientBackground } from "@/components/ui/GradientBackground";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
@@ -53,13 +54,14 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${cormorant.variable} h-full scroll-smooth`}
     >
-      <body className="min-h-full bg-[#F3F4F6] text-slate-800">
+      <body className="min-h-full bg-[#F3F4F6] text-slate-800 dark:bg-slate-950 dark:text-slate-100">
         <SessionProvider>
-          <GradientBackground />
-          <div className="flex min-h-full flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <footer className="mt-auto border-t border-white/20 bg-gradient-to-b from-sky-50/40 to-slate-100/60 py-10">
+          <ThemeProvider>
+            <GradientBackground />
+            <div className="flex min-h-full flex-col">
+              <SiteHeader />
+              <main className="flex-1">{children}</main>
+              <footer className="mt-auto border-t border-white/20 bg-gradient-to-b from-sky-50/40 to-slate-100/60 py-10 dark:border-white/10 dark:from-slate-900 dark:to-slate-950">
               <div className="jmj-container grid gap-8 sm:grid-cols-3">
                 <div>
                   <p className="font-serif text-xl text-[#1E3A8A]">JMJ — Just My Journey</p>
@@ -97,8 +99,9 @@ export default function RootLayout({
                 <Link href="/privacy" className="hover:text-[#2563EB] transition-colors">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-[#2563EB] transition-colors">Terms of Service</Link>
               </div>
-            </footer>
-          </div>
+              </footer>
+            </div>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

@@ -36,12 +36,12 @@ export function Modal({
       <button
         type="button"
         aria-label="Close modal"
-        className="absolute inset-0 cursor-default bg-slate-950/55"
+        className="absolute inset-0 cursor-default bg-slate-950/55 dark:bg-black/70"
         onClick={onClose}
       />
       <div
         className={cn(
-          "relative w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-5 text-slate-900 shadow-2xl",
+          "relative w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-slate-900 dark:text-slate-100",
           className
         )}
       >
@@ -50,12 +50,12 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             Close
           </button>
         </div>
-        {children}
+        <div className="max-h-[80vh] overflow-y-auto pr-1">{children}</div>
       </div>
     </div>
   );

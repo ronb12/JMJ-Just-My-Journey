@@ -30,7 +30,7 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="bg-sky-50/50 text-slate-600">
             <tr>
@@ -95,44 +95,48 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
 
       <Modal open={Boolean(editing)} title="Edit customer" onClose={() => setEditing(null)}>
         {editing ? (
-          <div className="space-y-2 text-sm">
+          <div className="space-y-4">
             <div>
-              <label className="text-xs text-slate-500">Name</label>
+              <label className="text-xs font-medium text-slate-600">Name</label>
               <input
-                className="mt-1 w-full rounded-xl border border-white/40 bg-white/50 px-2 py-1"
+                className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                 value={name}
                 onChange={(ev) => setName(ev.target.value)}
               />
             </div>
             <div>
-              <label className="text-xs text-slate-500">Email</label>
+              <label className="text-xs font-medium text-slate-600">Email</label>
               <input
-                className="mt-1 w-full rounded-xl border border-white/40 bg-white/50 px-2 py-1"
+                className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                 value={email}
                 onChange={(ev) => setEmail(ev.target.value)}
               />
             </div>
-            <LuxuryButton
-              type="button"
-              onClick={async () => {
-                const res = await fetch("/api/admin/customers", {
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ id: editing.id, name: name || null, email: email || null }),
-                });
-                if (!res.ok) {
-                  const j = (await res.json().catch(() => ({}))) as { error?: string };
-                  alert(j.error || "Could not save");
-                  return;
-                }
-                setList((prev) =>
-                  prev.map((p) => (p.id === editing.id ? { ...p, name: name || null, email: email || p.email } : p))
-                );
-                setEditing(null);
-              }}
-            >
-              Save changes
-            </LuxuryButton>
+            <div className="flex justify-end">
+              <LuxuryButton
+                type="button"
+                onClick={async () => {
+                  const res = await fetch("/api/admin/customers", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: editing.id, name: name || null, email: email || null }),
+                  });
+                  if (!res.ok) {
+                    const j = (await res.json().catch(() => ({}))) as { error?: string };
+                    alert(j.error || "Could not save");
+                    return;
+                  }
+                  setList((prev) =>
+                    prev.map((p) =>
+                      p.id === editing.id ? { ...p, name: name || null, email: email || p.email } : p
+                    )
+                  );
+                  setEditing(null);
+                }}
+              >
+                Save changes
+              </LuxuryButton>
+            </div>
           </div>
         ) : null}
       </Modal>

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-jmj: var(--font-outfit);
   --font-jmj-serif: var(--font-cormorant);
@@ -48,7 +50,7 @@
     min-height: 100%;
   }
   body {
-    @apply text-slate-800 antialiased;
+    @apply text-slate-800 antialiased dark:text-slate-100;
     font-family: var(--font-outfit, ui-sans-serif, system-ui);
   }
   h1,

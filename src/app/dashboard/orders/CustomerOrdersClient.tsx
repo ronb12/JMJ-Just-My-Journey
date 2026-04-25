@@ -16,7 +16,7 @@ export function CustomerOrdersClient({ initial }: { initial: Row[] }) {
   const [list, setList] = useState<Row[]>(initial);
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="bg-sky-50/50 text-slate-600">
             <tr>

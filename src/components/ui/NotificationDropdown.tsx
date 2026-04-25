@@ -45,7 +45,7 @@ export function NotificationDropdown({
       <button
         type="button"
         onClick={onToggle}
-        className="relative rounded-2xl border border-white/40 bg-white/30 p-2 backdrop-blur"
+        className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-slate-900"
         aria-label="Notifications"
       >
         <span className="text-lg">&#128276;</span>
@@ -65,8 +65,8 @@ export function NotificationDropdown({
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <GlassCard className="max-h-[80vh] overflow-y-auto p-0">
-              <div className="flex items-center justify-between border-b border-sky-100/80 px-4 py-2">
-                <h3 className="font-serif text-sky-900">Notifications</h3>
+              <div className="flex items-center justify-between border-b border-sky-100/80 px-4 py-2 dark:border-white/10">
+                <h3 className="font-serif text-sky-900 dark:text-slate-100">Notifications</h3>
                 <LuxuryButton
                   type="button"
                   variant="ghost"
@@ -77,21 +77,24 @@ export function NotificationDropdown({
                 </LuxuryButton>
               </div>
               {items.length === 0 ? (
-                <p className="p-4 text-sm text-slate-500">You&apos;re all caught up.</p>
+                <p className="p-4 text-sm text-slate-500 dark:text-slate-300">You&apos;re all caught up.</p>
               ) : null}
-              <ul className="divide-y divide-sky-100/50">
+              <ul className="divide-y divide-sky-100/50 dark:divide-white/10">
                 {items.map((n) => (
                   <li
                     key={n.id}
-                    className={cn("px-4 py-2 text-left text-sm", !n.is_read && "bg-sky-50/60")}
+                    className={cn(
+                      "px-4 py-2 text-left text-sm",
+                      !n.is_read && "bg-sky-50/60 dark:bg-white/5"
+                    )}
                   >
-                    <p className="font-medium text-slate-800">{n.title}</p>
-                    <p className="text-slate-600 line-clamp-2">{n.message}</p>
-                    <p className="mt-1 text-xs text-slate-400">{safeDate(n.created_at)}</p>
+                    <p className="font-medium text-slate-800 dark:text-slate-100">{n.title}</p>
+                    <p className="mt-0.5 whitespace-pre-wrap text-slate-800 dark:text-slate-200">{n.message}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{safeDate(n.created_at)}</p>
                     <div className="mt-1 flex gap-1">
                       {!n.is_read ? (
                         <button
-                          className="text-xs text-sky-700"
+                          className="text-xs text-sky-700 hover:underline"
                           type="button"
                           onClick={() => onMark(n.id)}
                         >
@@ -99,7 +102,7 @@ export function NotificationDropdown({
                         </button>
                       ) : null}
                       <button
-                        className="text-xs text-rose-600"
+                        className="text-xs text-rose-700 hover:underline"
                         type="button"
                         onClick={() => onDelete(n.id)}
                       >

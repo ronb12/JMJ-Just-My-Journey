@@ -11,7 +11,7 @@ export function GlassCard({ className, children, ...rest }: Props) {
     <div
       {...rest}
       className={cn(
-        "rounded-3xl border border-white/40 bg-white/50 p-6 shadow-lg shadow-sky-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/40",
+        "rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-sky-900/5 dark:border-white/10 dark:bg-slate-900",
         className
       )}
     >

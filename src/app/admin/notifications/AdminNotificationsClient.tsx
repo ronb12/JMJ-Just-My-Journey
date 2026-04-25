@@ -32,7 +32,7 @@ export function AdminNotificationsClient() {
   }, [load]);
 
   return (
-    <div className="mt-4 overflow-x-auto rounded-3xl border border-white/30 bg-white/30 shadow">
+    <div className="mt-4 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
       <table className="w-full min-w-[920px] text-left text-sm">
         <thead className="bg-sky-50/50 text-slate-600">
           <tr>

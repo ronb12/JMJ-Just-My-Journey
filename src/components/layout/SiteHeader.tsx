@@ -3,10 +3,11 @@
 import { NotificationDropdown } from "@/components/ui/NotificationDropdown";
 import { cn } from "@/lib/cn";
 import { signOut, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LuxuryButton } from "../ui/LuxuryButton";
 
 const nav = [
@@ -34,6 +35,14 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [dd, setDd] = useState(false);
   const [notifs, setNotifs] = useState<N[]>([]);
+  const { theme, setTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const currentTheme = useMemo(() => {
+    if (!mounted) return "light";
+    return theme === "system" ? systemTheme ?? "light" : theme ?? "light";
+  }, [mounted, theme, systemTheme]);
+
   const load = useCallback(() => {
     if (!s?.user) {
       setNotifs([]);
@@ -49,7 +58,7 @@ export function SiteHeader() {
   }, [load]);
   const unread = notifs.filter((n) => !n.is_read).length;
   return (
-    <header className="sticky top-0 z-40 border-b border-white/30 bg-white/40 shadow-sm shadow-sky-900/5 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-white/30 bg-white/40 shadow-sm shadow-sky-900/5 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/60 dark:shadow-none">
       <div className="jmj-container flex items-center justify-between py-3">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -65,7 +74,7 @@ export function SiteHeader() {
         </Link>
         <button
           type="button"
-          className="rounded-2xl border border-white/40 p-2 md:hidden"
+          className="rounded-2xl border border-white/40 p-2 md:hidden dark:border-white/15"
           onClick={() => setOpen((o) => !o)}
           aria-label="Open menu"
         >
@@ -73,7 +82,7 @@ export function SiteHeader() {
         </button>
         <nav
           className={cn(
-            "absolute left-0 right-0 top-full z-30 flex-col gap-1 border-b border-white/30 bg-white/90 p-4 backdrop-blur md:static md:flex md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0",
+            "absolute left-0 right-0 top-full z-30 flex-col gap-1 border-b border-white/30 bg-white/90 p-4 backdrop-blur md:static md:flex md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0 dark:border-white/10 dark:bg-slate-950/90",
             open ? "flex" : "hidden md:flex"
           )}
         >
@@ -82,8 +91,8 @@ export function SiteHeader() {
               key={i.href}
               href={i.href}
               className={cn(
-                "rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-white/50",
-                path === i.href && "text-[#2563EB] bg-sky-50/80"
+                "rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-white/50 dark:text-slate-200 dark:hover:bg-white/10",
+                path === i.href && "text-[#2563EB] bg-sky-50/80 dark:bg-white/10"
               )}
             >
               {i.label}
@@ -93,7 +102,7 @@ export function SiteHeader() {
             <>
               <Link
                 href={s.user.role === "admin" ? "/admin" : "/dashboard"}
-                className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white/50"
+                className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white/50 dark:text-slate-200 dark:hover:bg-white/10"
               >
                 {s.user.role === "admin" ? "Admin" : "My journey"}
               </Link>
@@ -101,6 +110,14 @@ export function SiteHeader() {
           ) : null}
         </nav>
         <div className="hidden items-center gap-2 md:flex">
+          <button
+            type="button"
+            className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+            onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
+            aria-label="Toggle dark mode"
+          >
+            {currentTheme === "dark" ? "Light" : "Dark"}
+          </button>
           {s?.user ? (
             <>
               <NotificationDropdown
@@ -154,6 +171,14 @@ export function SiteHeader() {
       </div>
       {s?.user && open ? (
         <div className="flex items-center justify-end gap-2 border-t border-white/20 px-4 py-2 md:hidden">
+          <button
+            type="button"
+            className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+            onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
+            aria-label="Toggle dark mode"
+          >
+            {currentTheme === "dark" ? "Light" : "Dark"}
+          </button>
           <NotificationDropdown
             open={dd}
             onToggle={() => setDd((d) => !d)}

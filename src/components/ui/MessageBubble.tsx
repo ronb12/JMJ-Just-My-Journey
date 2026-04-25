@@ -22,14 +22,19 @@ export function MessageBubble({ from, name, body, at }: Props) {
           "max-w-[90%] rounded-3xl border px-4 py-3 text-sm shadow-sm backdrop-blur",
           from === "me"
             ? "border-sky-200/60 bg-[#2563EB]/90 text-white"
-            : "border-white/50 bg-white/60 text-slate-800"
+            : "border-sky-200/50 bg-white/85 text-slate-800 dark:border-white/10 dark:bg-slate-800/90 dark:text-slate-100"
         )}
       >
         <div className="flex items-baseline justify-between gap-3">
-          <p className={cn("text-[10px] uppercase tracking-wide", from === "me" ? "text-white/80" : "text-slate-500")}>
+          <p
+            className={cn(
+              "text-[10px] uppercase tracking-wide",
+              from === "me" ? "text-white/80" : "text-slate-500 dark:text-slate-400"
+            )}
+          >
             {name}
           </p>
-          <p className={cn("text-[10px]", from === "me" ? "text-white/70" : "text-slate-400")}>
+          <p className={cn("text-[10px]", from === "me" ? "text-white/70" : "text-slate-400 dark:text-slate-500")}>
             {atText}
           </p>
         </div>

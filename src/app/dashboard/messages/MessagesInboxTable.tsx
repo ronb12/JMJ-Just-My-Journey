@@ -15,14 +15,21 @@ export function MessagesInboxTable({
   activeId,
   onOpen,
   onDelete,
+  className,
 }: {
   convs: Conv[];
   activeId: string | null;
   onOpen: (id: string) => void;
   onDelete: (id: string) => void;
+  className?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
+    <div
+      className={cn(
+        "overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/80",
+        className
+      )}
+    >
       <table className="w-full min-w-[520px] text-left text-sm">
         <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
           <tr>

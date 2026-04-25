@@ -42,6 +42,7 @@ export default async function AdminAnalyticsPage() {
 
   let abandonedNow = 0;
   let totalEvents7d = 0;
+  let uniqueVisitors7d = 0;
   let signedInVisitors7d = 0;
   let guestEvents7d = 0;
   let uniqueEventTypes7d = 0;
@@ -75,6 +76,13 @@ export default async function AdminAnalyticsPage() {
           AND user_id IS NOT NULL
       `) as { c: number }[];
       signedInVisitors7d = s7[0]?.c ?? 0;
+
+      const v7 = (await sql`
+        SELECT COUNT(DISTINCT COALESCE(user_id::text, properties->>'visitorId'))::int AS c
+        FROM analytics_events
+        WHERE created_at > (now() - interval '7 days')
+      `) as { c: number }[];
+      uniqueVisitors7d = v7[0]?.c ?? 0;
 
       const g7 = (await sql`
         SELECT COUNT(*)::int AS c
@@ -191,12 +199,12 @@ export default async function AdminAnalyticsPage() {
           hint="Has items, no activity in 24 hours"
         />
         <StatGlassCard
-          label="Different people in the store (signed in, 7 days)"
-          value={signedInVisitors7d.toLocaleString()}
+          label="Unique visitors (7 days)"
+          value={uniqueVisitors7d.toLocaleString()}
           hint={
             totalEvents7d > 0
-              ? `${totalEvents7d.toLocaleString()} total store steps; ${guestEvents7d.toLocaleString()} from browsers not signed in.`
-              : "Each signed-in person is counted once when they do something in the store."
+              ? `${signedInVisitors7d.toLocaleString()} signed in; ${guestEvents7d.toLocaleString()} guest actions logged.`
+              : "Based on either signed-in user or an anonymous device id cookie."
           }
         />
         <StatGlassCard

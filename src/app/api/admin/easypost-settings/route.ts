@@ -1,23 +1,13 @@
 import { getSql } from "@/lib/db";
-import { encryptSecret, maskKey } from "@/lib/encryption";
+import { encryptSecret } from "@/lib/encryption";
 import { clearEasyPostConfigCache } from "@/lib/easypost";
 import { requireUser } from "@/lib/session";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const postBody = z.object({
-  useCustomEasypost: z.boolean(),
-  apiKey: z.string().optional().nullable(),
-  from_name: z.string().max(200).optional().nullable(),
-  from_street1: z.string().max(200).optional().nullable(),
-  from_street2: z.string().max(200).optional().nullable(),
-  from_city: z.string().max(100).optional().nullable(),
-  from_state: z.string().max(100).optional().nullable(),
-  from_zip: z.string().max(20).optional().nullable(),
-  from_country: z.string().max(100).optional().nullable(),
-  from_phone: z.string().max(50).optional().nullable(),
-  from_email: z.string().max(200).optional().nullable(),
-});
+function isMissingTable(e: unknown) {
+  return (e as { code?: string })?.code === "42P01";
+}
 
 export async function GET() {
   const u = await requireUser();
@@ -28,6 +18,7 @@ export async function GET() {
   try {
     const r = (await sql`
       SELECT
+        id,
         use_custom_easypost,
         encrypted_api_key,
         from_name,
@@ -42,6 +33,7 @@ export async function GET() {
       FROM easypost_settings
       LIMIT 1
     `) as {
+      id: string;
       use_custom_easypost: boolean;
       encrypted_api_key: string | null;
       from_name: string | null;
@@ -54,49 +46,58 @@ export async function GET() {
       from_phone: string | null;
       from_email: string | null;
     }[];
-    const row = r[0];
-    if (!row) {
-      return NextResponse.json({
-        useCustomEasypost: false,
-        hasApiKey: false,
-        apiKeyMasked: "",
-        from_name: "",
-        from_street1: "",
-        from_street2: "",
-        from_city: "",
-        from_state: "",
-        from_zip: "",
-        from_country: "US",
-        from_phone: "",
-        from_email: "",
-      });
-    }
+
+    const row = r[0] || null;
     return NextResponse.json({
-      useCustomEasypost: row.use_custom_easypost,
-      hasApiKey: Boolean(row.encrypted_api_key),
-      apiKeyMasked: row.encrypted_api_key
-        ? maskKey("EZAKxxxxxxxxxxxxxxxxxxxxxxxx", 4)
-        : "",
-      from_name: row.from_name || "",
-      from_street1: row.from_street1 || "",
-      from_street2: row.from_street2 || "",
-      from_city: row.from_city || "",
-      from_state: row.from_state || "",
-      from_zip: row.from_zip || "",
-      from_country: row.from_country || "US",
-      from_phone: row.from_phone || "",
-      from_email: row.from_email || "",
+      useCustomEasypost: row?.use_custom_easypost ?? false,
+      hasApiKey: Boolean(row?.encrypted_api_key),
+      from_name: row?.from_name ?? "",
+      from_street1: row?.from_street1 ?? "",
+      from_street2: row?.from_street2 ?? "",
+      from_city: row?.from_city ?? "",
+      from_state: row?.from_state ?? "",
+      from_zip: row?.from_zip ?? "",
+      from_country: row?.from_country ?? "US",
+      from_phone: row?.from_phone ?? "",
+      from_email: row?.from_email ?? "",
     });
   } catch (e) {
-    if ((e as { code?: string })?.code === "42P01") {
+    if (isMissingTable(e)) {
       return NextResponse.json(
-        { error: "Run database migration: migrations/014_easypost_settings.sql" },
-        { status: 409 }
+        {
+          useCustomEasypost: false,
+          hasApiKey: false,
+          from_name: "",
+          from_street1: "",
+          from_street2: "",
+          from_city: "",
+          from_state: "",
+          from_zip: "",
+          from_country: "US",
+          from_phone: "",
+          from_email: "",
+          warning: "EasyPost settings require DB migration 014_easypost_settings.sql",
+        },
+        { status: 200 }
       );
     }
     throw e;
   }
 }
+
+const postBody = z.object({
+  useCustomEasypost: z.boolean(),
+  apiKey: z.string().optional().nullable(),
+  from_name: z.string().optional().nullable(),
+  from_street1: z.string().optional().nullable(),
+  from_street2: z.string().optional().nullable(),
+  from_city: z.string().optional().nullable(),
+  from_state: z.string().optional().nullable(),
+  from_zip: z.string().optional().nullable(),
+  from_country: z.string().optional().nullable(),
+  from_phone: z.string().optional().nullable(),
+  from_email: z.string().optional().nullable(),
+});
 
 export async function POST(req: Request) {
   const u = await requireUser();
@@ -106,66 +107,85 @@ export async function POST(req: Request) {
   const b = postBody.parse(await req.json().catch(() => ({})));
   const sql = getSql();
 
-  const ex = (await sql`SELECT id, encrypted_api_key FROM easypost_settings LIMIT 1`) as {
-    id: string;
-    encrypted_api_key: string | null;
-  }[];
-  if (!ex[0]) {
-    return NextResponse.json({ error: "easypost_settings row missing. Run migration 014." }, { status: 409 });
+  let enc: string | null = null;
+  if (b.useCustomEasypost) {
+    if (b.apiKey?.trim()) {
+      enc = encryptSecret(b.apiKey.trim());
+    }
   }
 
-  const fromEmailAny = b.from_email && b.from_email.trim() ? b.from_email.trim() : null;
+  try {
+    const ex = (await sql`SELECT id, encrypted_api_key FROM easypost_settings LIMIT 1`) as {
+      id: string;
+      encrypted_api_key: string | null;
+    }[];
+    const id = ex[0]?.id;
+    const keepKey = ex[0]?.encrypted_api_key ?? null;
+    const nextKey =
+      b.useCustomEasypost
+        ? enc ?? keepKey
+        : null;
 
-  if (!b.useCustomEasypost) {
-    await sql`
-      UPDATE easypost_settings
-      SET
-        use_custom_easypost = false,
-        encrypted_api_key = NULL,
-        from_name = ${b.from_name ?? null},
-        from_street1 = ${b.from_street1 ?? null},
-        from_street2 = ${b.from_street2 ?? null},
-        from_city = ${b.from_city ?? null},
-        from_state = ${b.from_state ?? null},
-        from_zip = ${b.from_zip ?? null},
-        from_country = ${b.from_country ?? null},
-        from_phone = ${b.from_phone || null},
-        from_email = ${fromEmailAny},
-        updated_at = now()
-      WHERE id = ${ex[0].id}::uuid
-    `;
-    clearEasyPostConfigCache();
-    return NextResponse.json({ ok: true });
+    if (id) {
+      await sql`
+        UPDATE easypost_settings
+        SET
+          use_custom_easypost = ${b.useCustomEasypost},
+          encrypted_api_key = ${nextKey},
+          from_name = ${b.from_name ?? null},
+          from_street1 = ${b.from_street1 ?? null},
+          from_street2 = ${b.from_street2 ?? null},
+          from_city = ${b.from_city ?? null},
+          from_state = ${b.from_state ?? null},
+          from_zip = ${b.from_zip ?? null},
+          from_country = ${b.from_country ?? null},
+          from_phone = ${b.from_phone ?? null},
+          from_email = ${b.from_email ?? null},
+          updated_at = now()
+        WHERE id = ${id}::uuid
+      `;
+    } else {
+      await sql`
+        INSERT INTO easypost_settings (
+          id,
+          use_custom_easypost,
+          encrypted_api_key,
+          from_name,
+          from_street1,
+          from_street2,
+          from_city,
+          from_state,
+          from_zip,
+          from_country,
+          from_phone,
+          from_email
+        )
+        VALUES (
+          gen_random_uuid(),
+          ${b.useCustomEasypost},
+          ${nextKey},
+          ${b.from_name ?? null},
+          ${b.from_street1 ?? null},
+          ${b.from_street2 ?? null},
+          ${b.from_city ?? null},
+          ${b.from_state ?? null},
+          ${b.from_zip ?? null},
+          ${b.from_country ?? null},
+          ${b.from_phone ?? null},
+          ${b.from_email ?? null}
+        )
+      `;
+    }
+  } catch (e) {
+    if (isMissingTable(e)) {
+      return NextResponse.json(
+        { error: "EasyPost settings table missing. Run migration: migrations/014_easypost_settings.sql" },
+        { status: 409 }
+      );
+    }
+    throw e;
   }
 
-  const keyTrim = b.apiKey?.trim() || "";
-  const hasExisting = Boolean(ex[0].encrypted_api_key);
-  if (!keyTrim && !hasExisting) {
-    return NextResponse.json(
-      { error: "API key is required when using custom EasyPost. Paste your production or test key from easypost.com." },
-      { status: 400 }
-    );
-  }
-  const enc: string = keyTrim
-    ? encryptSecret(keyTrim)
-    : (ex[0].encrypted_api_key as string);
-  await sql`
-    UPDATE easypost_settings
-    SET
-      use_custom_easypost = true,
-      encrypted_api_key = ${enc},
-      from_name = ${b.from_name ?? null},
-      from_street1 = ${b.from_street1 ?? null},
-      from_street2 = ${b.from_street2 ?? null},
-      from_city = ${b.from_city ?? null},
-      from_state = ${b.from_state ?? null},
-      from_zip = ${b.from_zip ?? null},
-      from_country = ${b.from_country ?? null},
-      from_phone = ${b.from_phone || null},
-      from_email = ${fromEmailAny},
-      updated_at = now()
-    WHERE id = ${ex[0].id}::uuid
-  `;
   clearEasyPostConfigCache();
-  return NextResponse.json({ ok: true, apiKeyMasked: keyTrim ? maskKey(keyTrim, 4) : "" });
+  return NextResponse.json({ ok: true });
 }

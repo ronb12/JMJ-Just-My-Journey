@@ -1,7 +1,8 @@
 import { logAnalyticsEvent } from "@/lib/analytics";
-import { requireUser } from "@/lib/session";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getUserSession } from "@/lib/session";
+import { randomUUID } from "crypto";
 
 const bodySchema = z.object({
   name: z.string().min(1).max(120),
@@ -9,15 +10,29 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const u = await requireUser();
-  if (u.error) {
-    return NextResponse.json({ error: u.error }, { status: 401 });
-  }
+  const s = await getUserSession();
   const b = bodySchema.parse(await req.json().catch(() => ({})));
+  const cookieName = "jmj_vid";
+  const existing = req.headers.get("cookie") || "";
+  const match = existing.match(new RegExp(`(?:^|; )${cookieName}=([^;]+)`));
+  const visitorId = match?.[1] || randomUUID();
   await logAnalyticsEvent({
     name: b.name,
-    userId: u.user!.id,
-    properties: b.properties ?? null,
+    userId: s?.user?.id ?? null,
+    properties: {
+      ...(b.properties ? b.properties : {}),
+      visitorId,
+    },
   });
-  return NextResponse.json({ ok: true });
+  const res = NextResponse.json({ ok: true });
+  if (!match?.[1]) {
+    res.cookies.set(cookieName, visitorId, {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+  }
+  return res;
 }

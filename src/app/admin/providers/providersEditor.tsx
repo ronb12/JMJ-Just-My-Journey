@@ -16,9 +16,9 @@ export function ProvidersEditor({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Name</th>
               <th className="p-2">Specialty</th>
@@ -28,7 +28,7 @@ export function ProvidersEditor({ initial }: { initial: Row[] }) {
           </thead>
           <tbody>
             {list.map((p) => (
-              <tr key={p.id} className="border-t border-sky-100/50">
+              <tr key={p.id} className="border-t border-sky-100/50 dark:border-white/10">
                 <td className="p-2">{p.name || "—"}</td>
                 <td className="p-2">{p.specialty || "—"}</td>
                 <td className="p-2">{p.is_active ? "yes" : "no"}</td>
@@ -114,27 +114,25 @@ function ProviderForm({
   const [busy, setBusy] = useState(false);
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className="jmj-label">Provider name</label>
-            <input
-              className="jmj-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Jacqueline Jackson"
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="jmj-label">Specialty (optional)</label>
-            <input
-              className="jmj-input"
-              value={specialty}
-              onChange={(e) => setSpecialty(e.target.value)}
-              placeholder="e.g. Massage Therapy, Skincare"
-            />
-            <p className="jmj-help">Shows in admin lists and can be used for internal notes.</p>
-          </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="jmj-field-block sm:col-span-2">
+          <label className="jmj-label">Provider name</label>
+          <input
+            className="jmj-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Jacqueline Jackson"
+          />
+        </div>
+        <div className="jmj-field-block sm:col-span-2">
+          <label className="jmj-label">Specialty (optional)</label>
+          <input
+            className="jmj-input"
+            value={specialty}
+            onChange={(e) => setSpecialty(e.target.value)}
+            placeholder="e.g. Massage Therapy, Skincare"
+          />
+          <p className="jmj-help">Shows in admin lists and can be used for internal notes.</p>
         </div>
       </div>
 

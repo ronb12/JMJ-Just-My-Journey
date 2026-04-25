@@ -26,9 +26,9 @@ export function ProductEditor({ initial }: { initial: P[] }) {
   const [adding, setAdding] = useState(false);
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Name</th>
               <th className="p-2">Category</th>
@@ -39,7 +39,7 @@ export function ProductEditor({ initial }: { initial: P[] }) {
           </thead>
           <tbody>
             {list.map((p) => (
-              <tr key={p.id} className="border-t border-sky-100/50">
+              <tr key={p.id} className="border-t border-sky-100/50 dark:border-white/10">
                 <td className="p-2">{p.name}</td>
                 <td className="p-2">{p.category || "—"}</td>
                 <td className="p-2 text-right">${p.price}</td>
@@ -131,7 +131,7 @@ function Add({ onDone, categories }: { onDone: () => void; categories: string[] 
   return (
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Product name</label>
           <input
             className="jmj-input"
@@ -140,7 +140,7 @@ function Add({ onDone, categories }: { onDone: () => void; categories: string[] 
             placeholder="e.g. Lavender Body Scrub"
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Price (USD)</label>
           <input
             className="jmj-input"
@@ -150,7 +150,7 @@ function Add({ onDone, categories }: { onDone: () => void; categories: string[] 
             inputMode="decimal"
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Stock</label>
           <input
             className="jmj-input"
@@ -160,7 +160,7 @@ function Add({ onDone, categories }: { onDone: () => void; categories: string[] 
             inputMode="numeric"
           />
         </div>
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Category</label>
           <select
             className="jmj-select"
@@ -215,7 +215,7 @@ function Edit({
   return (
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Product name</label>
           <input
             className="jmj-input"
@@ -223,7 +223,7 @@ function Edit({
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Price (USD)</label>
           <input
             className="jmj-input"
@@ -232,7 +232,7 @@ function Edit({
             inputMode="decimal"
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Stock</label>
           <input
             className="jmj-input"
@@ -241,7 +241,7 @@ function Edit({
             inputMode="numeric"
           />
         </div>
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Category</label>
           <select
             className="jmj-select"

@@ -21,9 +21,9 @@ export function ServiceEditor({ initial }: { initial: S[] }) {
   const [adding, setAdding] = useState(false);
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Name</th>
               <th className="p-2 text-right">Price</th>
@@ -33,7 +33,7 @@ export function ServiceEditor({ initial }: { initial: S[] }) {
           </thead>
           <tbody>
             {list.map((s) => (
-              <tr key={s.id} className="border-t border-sky-100/50">
+              <tr key={s.id} className="border-t border-sky-100/50 dark:border-white/10">
                 <td className="p-2">{s.name}</td>
                 <td className="p-2 text-right">{s.price ? `$${s.price}` : "—"}</td>
                 <td className="p-2 text-right">{s.duration_minutes ?? "—"}</td>
@@ -113,7 +113,7 @@ function AddForm({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Service name</label>
           <input
             className="jmj-input"
@@ -122,7 +122,7 @@ function AddForm({ onAdd }: { onAdd: () => void }) {
             placeholder="e.g. Aromatherapy Session"
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Price (USD)</label>
           <input
             className="jmj-input"
@@ -132,7 +132,7 @@ function AddForm({ onAdd }: { onAdd: () => void }) {
             inputMode="decimal"
           />
         </div>
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Description</label>
           <textarea
             className="jmj-textarea"
@@ -178,7 +178,7 @@ function EditForm({ initial, onDone }: { initial: S; onDone: () => void }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Service name</label>
           <input
             className="jmj-input"
@@ -186,7 +186,7 @@ function EditForm({ initial, onDone }: { initial: S; onDone: () => void }) {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Price (USD)</label>
           <input
             className="jmj-input"
@@ -195,7 +195,7 @@ function EditForm({ initial, onDone }: { initial: S; onDone: () => void }) {
             inputMode="decimal"
           />
         </div>
-        <div>
+        <div className="jmj-field-block">
           <label className="jmj-label">Duration (minutes)</label>
           <input
             className="jmj-input"
@@ -204,7 +204,7 @@ function EditForm({ initial, onDone }: { initial: S; onDone: () => void }) {
             inputMode="numeric"
           />
         </div>
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Description</label>
           <textarea
             className="jmj-textarea"

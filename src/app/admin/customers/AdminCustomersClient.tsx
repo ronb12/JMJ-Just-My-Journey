@@ -30,9 +30,9 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Name</th>
               <th className="p-2">Email</th>
@@ -42,7 +42,7 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
           </thead>
           <tbody>
             {list.map((u) => (
-              <tr key={u.id} className="border-t border-sky-100/50">
+              <tr key={u.id} className="border-t border-sky-100/50 dark:border-white/10">
                 <td className="p-2">{u.name || "—"}</td>
                 <td className="p-2">{u.email}</td>
                 <td className="p-2 whitespace-nowrap text-xs text-slate-500">{fmtDate(u.created_at)}</td>
@@ -96,7 +96,7 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
       <Modal open={Boolean(editing)} title="Edit customer" onClose={() => setEditing(null)}>
         {editing ? (
           <div className="space-y-4">
-            <div>
+            <div className="jmj-field-block">
               <label className="jmj-label">Name</label>
               <input
                 className="jmj-input"
@@ -104,7 +104,7 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
                 onChange={(ev) => setName(ev.target.value)}
               />
             </div>
-            <div>
+            <div className="jmj-field-block">
               <label className="jmj-label">Email</label>
               <input
                 className="jmj-input"

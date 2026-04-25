@@ -2,6 +2,7 @@ import { getSql, hasDatabase } from "@/lib/db";
 import { getUserSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { OrderAdmin } from "./OrderAdmin";
+import { AdminOrderForm } from "./AdminOrderForm";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,9 @@ export default async function AdminOrders() {
   return (
     <div>
       <h1 className="font-serif text-3xl text-[#1E3A8A]">Orders</h1>
+      <div className="mt-4">
+        <AdminOrderForm />
+      </div>
       <OrderAdmin rows={rows} />
     </div>
   );

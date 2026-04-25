@@ -3,6 +3,7 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { MessageBubble } from "@/components/ui/MessageBubble";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
+import { Modal } from "@/components/ui/Modal";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MessagesInboxTable } from "./MessagesInboxTable";
@@ -29,6 +30,7 @@ export function MessagesInbox(p: Props) {
   const [reply, setReply] = useState("");
   const [newSub, setNewSub] = useState("");
   const [newBody, setNewBody] = useState("");
+  const [adminOpen, setAdminOpen] = useState(false);
 
   const loadConvs = useCallback(() => {
     void fetch("/api/messages/conversations")
@@ -58,6 +60,111 @@ export function MessagesInbox(p: Props) {
   }, [sp]);
 
   const activeConv = convs.find((c) => c.id === cid) || null;
+
+  if (p.isAdmin) {
+    return (
+      <div className="mt-4 space-y-3">
+        <MessagesInboxTable
+          convs={convs}
+          activeId={adminOpen ? cid : null}
+          onOpen={(id) => {
+            loadTh(id);
+            setAdminOpen(true);
+          }}
+          onDelete={async (id) => {
+            if (!confirm("Delete this conversation?")) return;
+            const res = await fetch(`/api/messages/${id}`, { method: "DELETE" });
+            if (!res.ok) {
+              const j = (await res.json().catch(() => ({}))) as { error?: string };
+              alert(j.error || "Could not delete");
+              return;
+            }
+            if (cid === id) {
+              setCid(null);
+              setMsg([]);
+              setAdminOpen(false);
+            }
+            loadConvs();
+          }}
+        />
+
+        <Modal
+          open={adminOpen && Boolean(cid)}
+          title={activeConv?.subject || "Conversation"}
+          onClose={() => {
+            setAdminOpen(false);
+            setReply("");
+          }}
+          className="max-w-3xl"
+        >
+          {cid ? (
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-white/10 dark:bg-slate-950">
+                <p className="font-medium text-slate-800 dark:text-slate-100">
+                  {activeConv?.customer_name || "Customer"}{" "}
+                  <span className="text-slate-500 dark:text-slate-300">
+                    {activeConv?.customer_email ? `<${activeConv.customer_email}>` : null}
+                  </span>
+                </p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  Conversation ID: {cid}
+                </p>
+              </div>
+
+              <div className="max-h-[55vh] space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-900">
+                {msg.map((m) => (
+                  <MessageBubble
+                    key={m.id}
+                    from={m.sender_id === p.currentUserId ? "me" : "them"}
+                    name={m.sender_name}
+                    body={m.body}
+                    at={m.created_at}
+                  />
+                ))}
+                {msg.length === 0 ? (
+                  <p className="text-sm text-slate-500 dark:text-slate-300">No messages yet.</p>
+                ) : null}
+              </div>
+
+              <div className="jmj-field-block">
+                <label className="jmj-label">Reply</label>
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+                  <input
+                    className="jmj-input !mt-0 sm:flex-1"
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
+                    placeholder="Write a reply…"
+                  />
+                  <LuxuryButton
+                    type="button"
+                    className="!px-5 !py-2.5 sm:self-end"
+                    onClick={async () => {
+                      if (!reply.trim() || !cid) return;
+                      const res = await fetch(`/api/messages/${cid}/reply`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ body: reply }),
+                      });
+                      if (res.ok) {
+                        setReply("");
+                        loadTh(cid);
+                        loadConvs();
+                      } else {
+                        const j = (await res.json().catch(() => ({}))) as { error?: string };
+                        alert(j.error || "Could not send");
+                      }
+                    }}
+                  >
+                    Send
+                  </LuxuryButton>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </Modal>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4 grid gap-4 lg:grid-cols-3">

@@ -1,4 +1,5 @@
-import { getOrCreateCartId } from "@/lib/cart";
+import { logAnalyticsEvent } from "@/lib/analytics";
+import { getOrCreateCartId, touchCartActivity } from "@/lib/cart";
 import { getSql } from "@/lib/db";
 import { createNotification, getAdminUserIds } from "@/lib/notify";
 import { requireUser } from "@/lib/session";
@@ -72,6 +73,12 @@ export async function POST() {
     `;
   }
   await sql`DELETE FROM cart_items WHERE cart_id = ${cartId}::uuid`;
+  await touchCartActivity(cartId);
+  await logAnalyticsEvent({
+    name: "checkout_started",
+    userId: u.user!.id,
+    properties: { orderId, total, itemCount: items.length },
+  });
   await createNotification({
     userId: u.user!.id,
     title: "Order placed",

@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type Row = { id: string; name: string; price: string | null; is_active: boolean };
+type Row = { id: string; name: string; price: string | null; is_active: boolean; includes?: string | null };
 
 export function PackagesEditor({ initial }: { initial: Row[] }) {
   const r = useRouter();
@@ -16,9 +16,9 @@ export function PackagesEditor({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Name</th>
               <th className="p-2 text-right">Price</th>
@@ -28,7 +28,7 @@ export function PackagesEditor({ initial }: { initial: Row[] }) {
           </thead>
           <tbody>
             {list.map((p) => (
-              <tr key={p.id} className="border-t border-sky-100/50">
+              <tr key={p.id} className="border-t border-sky-100/50 dark:border-white/10">
                 <td className="p-2">{p.name}</td>
                 <td className="p-2 text-right">{p.price ? `$${p.price}` : "—"}</td>
                 <td className="p-2">{p.is_active ? "yes" : "no"}</td>
@@ -105,11 +105,12 @@ export function PackagesEditor({ initial }: { initial: Row[] }) {
 function PackageForm({ initial, onSaved }: { initial?: Row; onSaved: () => void }) {
   const [name, setName] = useState(initial?.name || "");
   const [price, setPrice] = useState(initial?.price || "199");
+  const [includes, setIncludes] = useState(initial?.includes || "");
   const [busy, setBusy] = useState(false);
   return (
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Package name</label>
           <input
             className="jmj-input"
@@ -118,7 +119,7 @@ function PackageForm({ initial, onSaved }: { initial?: Row; onSaved: () => void 
             placeholder="e.g. Relax & Restore Package"
           />
         </div>
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Price (USD)</label>
           <input
             className="jmj-input"
@@ -127,6 +128,17 @@ function PackageForm({ initial, onSaved }: { initial?: Row; onSaved: () => void 
             placeholder="199"
             inputMode="decimal"
           />
+        </div>
+        <div className="jmj-field-block sm:col-span-2">
+          <label className="jmj-label">What’s included</label>
+          <textarea
+            className="jmj-textarea"
+            value={includes}
+            onChange={(e) => setIncludes(e.target.value)}
+            placeholder={"Example:\n- 60 min Aromatherapy Session\n- Herbal tea + light refreshments\n- Take-home wellness kit"}
+            rows={4}
+          />
+          <p className="jmj-help">Shown to customers on the Packages page.</p>
         </div>
       </div>
       <div className="flex justify-end">
@@ -139,7 +151,13 @@ function PackageForm({ initial, onSaved }: { initial?: Row; onSaved: () => void 
             const res = await fetch("/api/packages", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id: initial?.id, name, price: parseFloat(price) || 0, is_active: true }),
+              body: JSON.stringify({
+                id: initial?.id,
+                name,
+                price: parseFloat(price) || 0,
+                includes: includes || null,
+                is_active: true,
+              }),
             });
             setBusy(false);
             if (!res.ok) {

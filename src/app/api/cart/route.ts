@@ -1,4 +1,5 @@
-import { getOrCreateCartId } from "@/lib/cart";
+import { logAnalyticsEvent } from "@/lib/analytics";
+import { getOrCreateCartId, touchCartActivity } from "@/lib/cart";
 import { getSql } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { NextResponse } from "next/server";
@@ -70,6 +71,12 @@ export async function POST(req: Request) {
       VALUES (${cartId}::uuid, ${b.productId}::uuid, ${b.quantity})
     `;
   }
+  await touchCartActivity(cartId);
+  await logAnalyticsEvent({
+    name: "cart_item_change",
+    userId: u.user!.id,
+    properties: { action: ex[0] ? "update_qty" : "add", productId: b.productId },
+  });
   return NextResponse.json({ ok: true });
 }
 
@@ -88,7 +95,7 @@ export async function PATCH(req: Request) {
     JOIN carts c ON c.id = ci.cart_id
     JOIN products p ON p.id = ci.product_id
     WHERE ci.id = ${b.itemId}::uuid
-  `) as { user_id: string; stock_quantity: number }[];
+  `) as { user_id: string; cart_id: string; stock_quantity: number }[];
   if (!row[0] || row[0].user_id !== u.user!.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -96,6 +103,12 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Not enough stock" }, { status: 400 });
   }
   await sql`UPDATE cart_items SET quantity = ${b.quantity} WHERE id = ${b.itemId}::uuid`;
+  await touchCartActivity(row[0].cart_id);
+  await logAnalyticsEvent({
+    name: "cart_item_change",
+    userId: u.user!.id,
+    properties: { action: "set_qty", itemId: b.itemId },
+  });
   return NextResponse.json({ ok: true });
 }
 
@@ -108,13 +121,20 @@ export async function DELETE(req: Request) {
   const itemId = z.string().uuid().parse(searchParams.get("itemId") || undefined);
   const sql = getSql();
   const row = (await sql`
-    SELECT ci.id FROM cart_items ci
+    SELECT ci.id, ci.cart_id
+    FROM cart_items ci
     JOIN carts c ON c.id = ci.cart_id
     WHERE ci.id = ${itemId}::uuid AND c.user_id = ${u.user!.id}::uuid
-  `) as { id: string }[];
+  `) as { id: string; cart_id: string }[];
   if (!row[0]) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   await sql`DELETE FROM cart_items WHERE id = ${itemId}::uuid`;
+  await touchCartActivity(row[0].cart_id);
+  await logAnalyticsEvent({
+    name: "cart_item_change",
+    userId: u.user!.id,
+    properties: { action: "remove", itemId },
+  });
   return NextResponse.json({ ok: true });
 }

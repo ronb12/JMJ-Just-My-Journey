@@ -9,9 +9,6 @@ type Customer = { id: string; name: string | null; email: string };
 type Service = { id: string; name: string; price: string | null };
 type Provider = { id: string; name: string | null };
 
-const labelCls = "text-sm font-medium text-slate-700";
-const inputCls = "mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2 text-sm";
-
 export function AdminBookingForm() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -70,9 +67,9 @@ export function AdminBookingForm() {
         }}
       >
         <form className="max-w-xl space-y-3" onSubmit={handleSubmit}>
-          <div>
-            <label className={labelCls}>Customer</label>
-            <select name="userId" required className={inputCls}>
+          <div className="jmj-field-block">
+            <label className="jmj-label">Customer</label>
+            <select name="userId" required className="jmj-select">
               <option value="">Select customer…</option>
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -81,9 +78,9 @@ export function AdminBookingForm() {
               ))}
             </select>
           </div>
-          <div>
-            <label className={labelCls}>Service</label>
-            <select name="serviceId" required className={inputCls}>
+          <div className="jmj-field-block">
+            <label className="jmj-label">Service</label>
+            <select name="serviceId" required className="jmj-select">
               <option value="">Select service…</option>
               {services.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -93,9 +90,9 @@ export function AdminBookingForm() {
               ))}
             </select>
           </div>
-          <div>
-            <label className={labelCls}>Provider (optional)</label>
-            <select name="providerId" className={inputCls}>
+          <div className="jmj-field-block">
+            <label className="jmj-label">Provider (optional)</label>
+            <select name="providerId" className="jmj-select">
               <option value="">Any provider</option>
               {providers.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -105,25 +102,25 @@ export function AdminBookingForm() {
             </select>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelCls}>Date</label>
-              <input name="appointmentDate" type="date" required className={inputCls} />
+            <div className="jmj-field-block">
+              <label className="jmj-label">Date</label>
+              <input name="appointmentDate" type="date" required className="jmj-input" />
             </div>
-            <div>
-              <label className={labelCls}>Time</label>
-              <input name="appointmentTime" type="time" defaultValue="10:00" required className={inputCls} />
+            <div className="jmj-field-block">
+              <label className="jmj-label">Time</label>
+              <input name="appointmentTime" type="time" defaultValue="10:00" required className="jmj-input" />
             </div>
           </div>
-          <div>
-            <label className={labelCls}>Payment status</label>
-            <select name="paymentStatus" className={inputCls}>
+          <div className="jmj-field-block">
+            <label className="jmj-label">Payment status</label>
+            <select name="paymentStatus" className="jmj-select">
               <option value="pending">Pending</option>
               <option value="paid">Paid</option>
             </select>
           </div>
-          <div>
-            <label className={labelCls}>Notes (optional)</label>
-            <textarea name="notes" rows={2} className={inputCls} placeholder="Allergies, preferences…" />
+          <div className="jmj-field-block">
+            <label className="jmj-label">Notes (optional)</label>
+            <textarea name="notes" rows={2} className="jmj-textarea" placeholder="Allergies, preferences…" />
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <LuxuryButton type="submit" disabled={busy}>

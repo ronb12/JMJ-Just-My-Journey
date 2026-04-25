@@ -46,9 +46,9 @@ export default function NotificationsPage() {
         </LuxuryButton>
       </div>
       <div className="mt-4 space-y-3">
-        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
           <table className="w-full min-w-[920px] text-left text-sm">
-            <thead className="bg-sky-50/50 text-slate-600">
+            <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
               <tr>
                 <th className="p-2">Title</th>
                 <th className="p-2">Message</th>

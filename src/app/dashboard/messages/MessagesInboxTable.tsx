@@ -22,9 +22,9 @@ export function MessagesInboxTable({
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+    <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
       <table className="w-full min-w-[520px] text-left text-sm">
-        <thead className="bg-sky-50/50 text-slate-600">
+        <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
           <tr>
             <th className="p-2">Subject</th>
             <th className="p-2 whitespace-nowrap">Updated</th>
@@ -36,14 +36,14 @@ export function MessagesInboxTable({
             <tr
               key={c.id}
               className={cn(
-                "border-t border-sky-100/50",
-                activeId === c.id && "bg-sky-50/60"
+                "border-t border-sky-100/50 dark:border-white/10",
+                activeId === c.id && "bg-sky-50/60 dark:bg-white/5"
               )}
             >
               <td className="p-2">
                 <button type="button" className="w-full text-left" onClick={() => onOpen(c.id)}>
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-medium text-slate-800 hover:underline">
+                    <span className="truncate font-medium text-slate-800 hover:underline dark:text-slate-100">
                       {c.subject}
                     </span>
                     {(c.unread ?? 0) > 0 ? (

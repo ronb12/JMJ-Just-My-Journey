@@ -13,6 +13,7 @@ type M = {
   monthly_price: string | null;
   description?: string | null;
   benefits?: string | null;
+  includes?: string | null;
 };
 
 export function MembershipsClient({ memberships }: { memberships: M[] }) {
@@ -74,6 +75,12 @@ export function MembershipsClient({ memberships }: { memberships: M[] }) {
           <h2 className="font-serif text-2xl text-sky-900">{m.name}</h2>
           {m.description ? <p className="mt-2 text-slate-600">{m.description}</p> : null}
           {m.benefits ? <p className="mt-2 text-sm text-slate-500">{m.benefits}</p> : null}
+          {m.includes ? (
+            <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">What’s included</p>
+              <p className="mt-1 whitespace-pre-wrap">{m.includes}</p>
+            </div>
+          ) : null}
           <p className="mt-3 text-2xl text-[#2563EB]">
             {m.monthly_price != null ? `$${m.monthly_price}/mo` : "—"}
           </p>

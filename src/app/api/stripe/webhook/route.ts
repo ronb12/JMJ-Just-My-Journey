@@ -1,3 +1,4 @@
+import { logAnalyticsEvent } from "@/lib/analytics";
 import { getSql } from "@/lib/db";
 import { createNotification, getAdminUserIds } from "@/lib/notify";
 import { getStripeClient } from "@/lib/stripe-config";
@@ -85,6 +86,18 @@ export async function POST(req: Request) {
           message: "We received your payment. Your order is being prepared.",
           type: "order_paid",
           linkUrl: "/dashboard/orders",
+        });
+        const amt = (await sql`
+          SELECT total_amount FROM orders WHERE id = ${meta.orderId}::uuid LIMIT 1
+        `) as { total_amount: string | null }[];
+        await logAnalyticsEvent({
+          name: "store_order_paid",
+          userId: u.user_id,
+          properties: {
+            orderId: meta.orderId,
+            total: amt[0]?.total_amount ?? null,
+            recoveredFromCart: true,
+          },
         });
       }
     }

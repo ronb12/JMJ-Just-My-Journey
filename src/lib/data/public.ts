@@ -83,6 +83,8 @@ export async function getPackages() {
     id: string;
     name: string;
     price: string | null;
+    description?: string | null;
+    includes?: string | null;
   }[];
   });
 }
@@ -94,6 +96,9 @@ export async function getMemberships() {
     id: string;
     name: string;
     monthly_price: string | null;
+    description?: string | null;
+    benefits?: string | null;
+    includes?: string | null;
   }[];
   });
 }

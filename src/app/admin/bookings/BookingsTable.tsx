@@ -41,7 +41,7 @@ export function BookingsTable({ rows }: { rows: unknown[] }) {
   return (
     <GlassCard className="mt-4 max-w-5xl overflow-x-auto p-0">
       <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="bg-sky-50/50 text-slate-600">
+        <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
           <tr>
             <th className="p-2">User</th>
             <th className="p-2">Service</th>
@@ -54,7 +54,7 @@ export function BookingsTable({ rows }: { rows: unknown[] }) {
         </thead>
         <tbody>
           {local.map((r) => (
-            <tr key={r.id} className="border-t border-sky-100/50">
+            <tr key={r.id} className="border-t border-sky-100/50 dark:border-white/10">
               <td className="p-2">
                 {r.user_name}
                 <br />

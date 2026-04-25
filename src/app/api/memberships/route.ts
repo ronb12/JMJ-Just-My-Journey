@@ -15,6 +15,7 @@ const upsert = z.object({
   description: z.string().optional().nullable(),
   monthly_price: z.coerce.number().min(0),
   benefits: z.string().optional().nullable(),
+  includes: z.string().max(4000).optional().nullable(),
   is_active: z.boolean().optional(),
 });
 
@@ -32,18 +33,20 @@ export async function POST(req: Request) {
         description = ${b.description ?? null},
         monthly_price = ${String(b.monthly_price)}::numeric,
         benefits = ${b.benefits ?? null},
+        includes = ${b.includes ?? null},
         is_active = ${b.is_active ?? true}
       WHERE id = ${b.id}::uuid
     `;
     return NextResponse.json({ id: b.id });
   }
   const n = (await sql`
-    INSERT INTO memberships (name, description, monthly_price, benefits, is_active)
+    INSERT INTO memberships (name, description, monthly_price, benefits, includes, is_active)
     VALUES (
       ${b.name},
       ${b.description ?? null},
       ${String(b.monthly_price)}::numeric,
       ${b.benefits ?? null},
+      ${b.includes ?? null},
       ${b.is_active ?? true}
     )
     RETURNING id

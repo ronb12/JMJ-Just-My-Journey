@@ -12,6 +12,7 @@ type P = {
   name: string;
   price: string | null;
   description?: string | null;
+  includes?: string | null;
 };
 
 export function PackagesClient({ packages }: { packages: P[] }) {
@@ -72,6 +73,12 @@ export function PackagesClient({ packages }: { packages: P[] }) {
         <FloatingCard key={p.id} delay={i * 0.04}>
           <h2 className="font-serif text-2xl text-sky-900">{p.name}</h2>
           {p.description ? <p className="mt-2 text-slate-600">{p.description}</p> : null}
+          {p.includes ? (
+            <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">What’s included</p>
+              <p className="mt-1 whitespace-pre-wrap">{p.includes}</p>
+            </div>
+          ) : null}
           <p className="mt-3 text-2xl text-[#2563EB]">
             {p.price != null ? `$${p.price}` : "—"}
           </p>

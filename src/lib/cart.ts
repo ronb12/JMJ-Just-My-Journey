@@ -11,3 +11,9 @@ export async function getOrCreateCartId(userId: string): Promise<string> {
   `) as { id: string }[];
   return n[0].id;
 }
+
+/** Bump `carts.updated_at` so abandonment timers reflect real activity. */
+export async function touchCartActivity(cartId: string) {
+  const sql = getSql();
+  await sql`UPDATE carts SET updated_at = now() WHERE id = ${cartId}::uuid`;
+}

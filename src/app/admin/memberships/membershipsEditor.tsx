@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type Row = { id: string; name: string; monthly_price: string | null; is_active: boolean };
+type Row = { id: string; name: string; monthly_price: string | null; is_active: boolean; includes?: string | null };
 
 export function MembershipsEditor({ initial }: { initial: Row[] }) {
   const r = useRouter();
@@ -16,9 +16,9 @@ export function MembershipsEditor({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Name</th>
               <th className="p-2 text-right">Monthly</th>
@@ -28,7 +28,7 @@ export function MembershipsEditor({ initial }: { initial: Row[] }) {
           </thead>
           <tbody>
             {list.map((m) => (
-              <tr key={m.id} className="border-t border-sky-100/50">
+              <tr key={m.id} className="border-t border-sky-100/50 dark:border-white/10">
                 <td className="p-2">{m.name}</td>
                 <td className="p-2 text-right">{m.monthly_price ? `$${m.monthly_price}` : "—"}</td>
                 <td className="p-2">{m.is_active ? "yes" : "no"}</td>
@@ -105,11 +105,12 @@ export function MembershipsEditor({ initial }: { initial: Row[] }) {
 function MembershipForm({ initial, onSaved }: { initial?: Row; onSaved: () => void }) {
   const [name, setName] = useState(initial?.name || "");
   const [monthly, setMonthly] = useState(initial?.monthly_price || "49");
+  const [includes, setIncludes] = useState(initial?.includes || "");
   const [busy, setBusy] = useState(false);
   return (
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Membership name</label>
           <input
             className="jmj-input"
@@ -118,7 +119,7 @@ function MembershipForm({ initial, onSaved }: { initial?: Row; onSaved: () => vo
             placeholder="e.g. Monthly Self‑Care"
           />
         </div>
-        <div className="sm:col-span-2">
+        <div className="jmj-field-block sm:col-span-2">
           <label className="jmj-label">Monthly price (USD)</label>
           <input
             className="jmj-input"
@@ -128,6 +129,17 @@ function MembershipForm({ initial, onSaved }: { initial?: Row; onSaved: () => vo
             inputMode="decimal"
           />
           <p className="jmj-help">Displayed to customers; payments are handled through Stripe.</p>
+        </div>
+        <div className="jmj-field-block sm:col-span-2">
+          <label className="jmj-label">What’s included</label>
+          <textarea
+            className="jmj-textarea"
+            value={includes}
+            onChange={(e) => setIncludes(e.target.value)}
+            placeholder={"Example:\n- Priority booking\n- 10% off store products\n- Monthly wellness check-in"}
+            rows={4}
+          />
+          <p className="jmj-help">Shown to customers on the Memberships page.</p>
         </div>
       </div>
       <div className="flex justify-end">
@@ -144,6 +156,7 @@ function MembershipForm({ initial, onSaved }: { initial?: Row; onSaved: () => vo
                 id: initial?.id,
                 name,
                 monthly_price: parseFloat(monthly) || 0,
+                includes: includes || null,
                 is_active: true,
               }),
             });

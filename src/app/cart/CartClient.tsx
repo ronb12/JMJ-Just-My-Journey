@@ -51,6 +51,21 @@ export function CartClient() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    try {
+      if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("jmj_cart_view_logged")) return;
+      void fetch("/api/analytics/event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "cart_view" }),
+      });
+      sessionStorage.setItem("jmj_cart_view_logged", "1");
+    } catch {
+      /* ignore */
+    }
+  }, [status]);
+
   const lineTotal = (i: Item) => (parseFloat(i.price) * i.quantity).toFixed(2);
   const sum = items
     .reduce((a, i) => a + parseFloat(i.price) * i.quantity, 0)

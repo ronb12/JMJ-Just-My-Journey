@@ -32,9 +32,9 @@ export function AdminNotificationsClient() {
   }, [load]);
 
   return (
-    <div className="mt-4 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+    <div className="mt-4 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
       <table className="w-full min-w-[920px] text-left text-sm">
-        <thead className="bg-sky-50/50 text-slate-600">
+        <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
           <tr>
             <th className="p-2">Title</th>
             <th className="p-2">Message</th>
@@ -44,7 +44,7 @@ export function AdminNotificationsClient() {
         </thead>
         <tbody>
           {rows.map((n) => (
-            <tr key={n.id} className="border-t border-sky-100/50">
+            <tr key={n.id} className="border-t border-sky-100/50 dark:border-white/10">
               <td className="p-2 font-medium text-slate-800">{n.title || "—"}</td>
               <td className="p-2 text-slate-600">{n.message || "—"}</td>
               <td className="p-2 whitespace-nowrap text-xs text-slate-500">{fmtDate(n.created_at)}</td>

@@ -16,6 +16,7 @@
     "neon:connection-string": "neonctl connection-string --pooled"
   },
   "dependencies": {
+    "@easypost/api": "^8.8.0",
     "@neondatabase/serverless": "0.10.4",
     "bcryptjs": "2.4.3",
     "framer-motion": "12.38.0",

@@ -26,9 +26,9 @@ export function CustomerBookingsClient({ initial }: { initial: Row[] }) {
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow dark:border-white/10 dark:bg-slate-900">
         <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="bg-sky-50/50 text-slate-600">
+          <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
             <tr>
               <th className="p-2">Service</th>
               <th className="p-2 whitespace-nowrap">Date</th>
@@ -43,7 +43,7 @@ export function CustomerBookingsClient({ initial }: { initial: Row[] }) {
             {list.map((a) => {
               const canChange = a.payment_status === "pending" && a.status === "pending";
               return (
-                <tr key={a.id} className="border-t border-sky-100/50">
+                <tr key={a.id} className="border-t border-sky-100/50 dark:border-white/10">
                   <td className="p-2">{a.service_name || "—"}</td>
                   <td className="p-2 whitespace-nowrap">{String(a.appointment_date || "")}</td>
                   <td className="p-2 whitespace-nowrap">{a.appointment_time ? a.appointment_time.slice(0, 5) : "—"}</td>
@@ -108,8 +108,8 @@ export function CustomerBookingsClient({ initial }: { initial: Row[] }) {
       <Modal open={Boolean(editing)} title="Edit booking" onClose={() => setEditing(null)}>
         {editing ? (
           <div className="space-y-3">
-            <div className="grid gap-2 text-sm sm:grid-cols-2">
-              <div>
+            <div className="grid gap-3 text-sm sm:grid-cols-2">
+              <div className="jmj-field-block">
                 <label className="jmj-label">Date</label>
                 <input
                   type="date"
@@ -118,7 +118,7 @@ export function CustomerBookingsClient({ initial }: { initial: Row[] }) {
                   onChange={(e) => setDate(e.target.value)}
                 />
               </div>
-              <div>
+              <div className="jmj-field-block">
                 <label className="jmj-label">Time</label>
                 <input
                   type="time"
@@ -127,7 +127,7 @@ export function CustomerBookingsClient({ initial }: { initial: Row[] }) {
                   onChange={(e) => setTime(e.target.value)}
                 />
               </div>
-              <div className="sm:col-span-2">
+              <div className="jmj-field-block sm:col-span-2">
                 <label className="jmj-label">Notes</label>
                 <textarea
                   className="jmj-textarea"

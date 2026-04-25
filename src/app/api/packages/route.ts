@@ -13,6 +13,7 @@ const upsert = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
   description: z.string().optional().nullable(),
+  includes: z.string().max(4000).optional().nullable(),
   price: z.coerce.number().min(0),
   is_active: z.boolean().optional(),
 });
@@ -29,6 +30,7 @@ export async function POST(req: Request) {
       UPDATE packages SET
         name = ${b.name},
         description = ${b.description ?? null},
+        includes = ${b.includes ?? null},
         price = ${String(b.price)}::numeric,
         is_active = ${b.is_active ?? true}
       WHERE id = ${b.id}::uuid
@@ -36,8 +38,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ id: b.id });
   }
   const n = (await sql`
-    INSERT INTO packages (name, description, price, is_active)
-    VALUES (${b.name}, ${b.description ?? null}, ${String(b.price)}::numeric, ${b.is_active ?? true})
+    INSERT INTO packages (name, description, includes, price, is_active)
+    VALUES (${b.name}, ${b.description ?? null}, ${b.includes ?? null}, ${String(b.price)}::numeric, ${b.is_active ?? true})
     RETURNING id
   `) as { id: string }[];
   return NextResponse.json({ id: n[0].id });

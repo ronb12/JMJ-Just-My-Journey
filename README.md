@@ -1,5 +1,7 @@
 # JMJ — Just My Journey
 
+**Repository:** [github.com/ronb12/JMJ-Just-My-Journey](https://github.com/ronb12/JMJ-Just-My-Journey)
+
 Premium **luxury wellness, spa booking, and wellness e‑commerce** platform. Blue glassmorphism UI, Stripe Checkout (server-only), Neon PostgreSQL, and role-based customer/admin areas.
 
 ## Features

@@ -48,9 +48,9 @@ export default async function AdminNewsletterPage() {
       <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
         <strong className="font-medium text-slate-700 dark:text-slate-200">Create &amp; history</strong> is where you write
         campaigns and track draft / sent (record-keeping).{" "}
-        <strong className="font-medium text-slate-700 dark:text-slate-200">Subscribers</strong> lists signups from the contact
-        form and from customer <strong className="font-medium text-slate-700 dark:text-slate-200">Account</strong> settings. Outbound
-        email is not wired yet—copy content or export addresses to your ESP.
+        <strong className="font-medium text-slate-700 dark:text-slate-200">Subscribers</strong> always loads from the live
+        <code className="mx-0.5 text-xs">newsletter_subscribers</code> list and re-syncs in the admin UI, so the table matches
+        everyone who signed up (contact, account, etc.). Outbound email is not wired yet—copy from here to your ESP.
       </p>
       <div className="mt-4">
         <AdminNewsletterClient initial={initial} initialPosts={initialPosts} />

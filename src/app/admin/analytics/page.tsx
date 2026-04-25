@@ -8,15 +8,16 @@ export const dynamic = "force-dynamic";
 
 type Row = { name: string; c: string };
 
+/** Human-friendly names—no need to match internal database labels */
 const EVENT_LABELS: Record<string, string> = {
-  cart_view: "Cart views",
-  cart_item_change: "Cart updates",
-  product_view: "Product views",
-  add_to_cart: "Add to cart",
-  checkout_started: "Checkout started",
-  store_order_paid: "Store order paid",
-  abandoned_cart_reminder_sent: "Abandoned cart reminder sent",
-  abandoned_cart_cron_run: "Abandoned cart cron run",
+  cart_view: "Someone opened their shopping cart",
+  cart_item_change: "Items added, removed, or updated in a cart",
+  product_view: "A product was viewed",
+  add_to_cart: "Something was added to a cart",
+  checkout_started: "A customer started checking out (store)",
+  store_order_paid: "A store order was paid",
+  abandoned_cart_reminder_sent: "A “don’t forget your cart” email was sent",
+  abandoned_cart_cron_run: "A routine check for forgotten carts ran in the background",
 };
 
 function formatEventLabel(name: string) {
@@ -118,69 +119,83 @@ export default async function AdminAnalyticsPage() {
           aria-hidden
         />
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2563EB]/80 dark:text-sky-300/80">
-          Insights
+          How your online store is doing
         </p>
-        <h1 className="mt-1 font-serif text-3xl text-[#1E3A8A] dark:text-sky-200">Analytics</h1>
+        <h1 className="mt-1 font-serif text-3xl text-[#1E3A8A] dark:text-sky-200">Store activity</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          Product and commerce signals from the last week—cart health, custom events, and a live stream of
-          what shoppers are doing.
+          Use this page to see <strong className="font-medium text-slate-800 dark:text-slate-200">shopping cart activity</strong>, what
+          visitors are doing in your store, and reminder emails—not spreadsheets or code.
         </p>
-        <details className="mt-4 max-w-2xl rounded-2xl border border-slate-200/80 bg-white/50 px-4 py-2 text-sm text-slate-600 open:bg-white/80 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-300 open:dark:bg-slate-950/70">
-          <summary className="cursor-pointer list-none font-medium text-slate-800 outline-none marker:hidden dark:text-slate-200 [&::-webkit-details-marker]:hidden">
-            <span className="text-[#2563EB] dark:text-sky-400">How this works</span> — abandoned carts &amp; cron
+        <details className="mt-4 max-w-2xl rounded-2xl border border-slate-200/80 bg-white/50 px-4 py-3 text-sm text-slate-600 open:bg-white/80 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-300 open:dark:bg-slate-950/70">
+          <summary className="cursor-pointer list-none font-medium text-slate-800 outline-none dark:text-slate-200 marker:hidden [&::-webkit-details-marker]:hidden">
+            <span className="text-[#2563EB] dark:text-sky-400">A few things to know</span> (read once)
           </summary>
-          <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-            A cart is “stale” when it still has line items and <code className="rounded bg-slate-200/80 px-1">carts.updated_at</code> is
-            more than 24 hours ago (updates when items change). The abandoned-cart job at{" "}
-            <code className="rounded bg-slate-200/80 px-1">/api/cron/abandoned-cart</code> uses <code className="rounded bg-slate-200/80 px-1">CRON_SECRET</code>{" "}
-            and a Vercel Cron schedule. Events are stored in <code className="rounded bg-slate-200/80 px-1">analytics_events</code> (migration
-            009+).
-          </p>
+          <ul className="mt-2 list-inside list-disc space-y-2 pl-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+            <li>
+              <strong className="font-medium text-slate-700 dark:text-slate-300">Forgotten carts (1+ day):</strong> counts carts that
+              still have at least one product but haven’t been touched for 24 hours—helpful to see who may need a nudge.
+            </li>
+            <li>
+              <strong className="font-medium text-slate-700 dark:text-slate-300">Tracked actions (past week):</strong> a running total
+              of steps the site records (visits, cart use, checkout, and similar). A higher number usually means more traffic
+              or more shopping steps.
+            </li>
+            <li>
+              <strong className="font-medium text-slate-700 dark:text-slate-300">“Guest” in the list:</strong> the person wasn’t
+              signed in; they may still be a repeat buyer on another visit.
+            </li>
+            <li>
+              <strong className="font-medium text-slate-700 dark:text-slate-300">Reminder emails:</strong> if your site is set up to
+              email people who left items behind, the count here shows how many of those were sent in the last week.
+            </li>
+          </ul>
         </details>
       </div>
 
       {dbError && hasDatabase() && (
-        <p className="text-sm text-amber-800 dark:text-amber-200">
-          Some analytics tables may be missing. Run migration <code className="text-xs">009_abandoned_cart_analytics.sql</code> in Neon, then
-          refresh.
-        </p>
+        <div className="rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
+          <p className="font-medium">We couldn’t load these numbers</p>
+          <p className="mt-1 text-xs text-amber-900/80 dark:text-amber-200/90">
+            Ask whoever manages the website to confirm the database and analytics are set up. You can also try again later.
+          </p>
+        </div>
       )}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatGlassCard
-          label="Stale carts (24h+)"
+          label="Forgotten carts (1+ day old)"
           value={abandonedNow.toLocaleString()}
-          hint="Has items, no touch 24h"
+          hint="Has items, no activity in 24 hours"
         />
         <StatGlassCard
-          label="Events logged (7d)"
+          label="Tracked steps (past 7 days)"
           value={totalEvents7d.toLocaleString()}
-          hint="All tracked event rows"
+          hint="Add-to-cart, page views, checkout, etc."
         />
         <StatGlassCard
-          label="Event types (7d)"
+          label="Types of activity (7 days)"
           value={uniqueEventTypes7d.toLocaleString()}
-          hint="Distinct event names"
+          hint="How many different kinds of actions happened"
         />
         <StatGlassCard
-          label="Reminders sent (7d)"
+          label="“Come back to your cart” emails (7 days)"
           value={reminders7d.toLocaleString()}
-          hint="Abandoned cart emails / jobs"
+          hint="Only if reminders are turned on for your site"
         />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard className="overflow-hidden p-0">
           <div className="border-b border-slate-200/80 bg-sky-50/40 px-4 py-3 dark:border-white/10 dark:bg-slate-800/30">
-            <h2 className="font-serif text-lg text-sky-900 dark:text-sky-200">Top events (7 days)</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">By volume, after deduplication by name.</p>
+            <h2 className="font-serif text-lg text-sky-900 dark:text-sky-200">What people did most (past week)</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">The longer the bar, the more often that happened.</p>
           </div>
           <div className="p-4">
             {last7.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-200 py-10 text-center dark:border-white/10">
-                <p className="text-sm text-slate-500 dark:text-slate-400">No events in the last week yet.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">No store activity in the last week yet.</p>
                 <p className="text-xs text-slate-400 dark:text-slate-500">
-                  Browse the store, add to cart, or start checkout to generate data.
+                  When people browse, use the cart, or check out, you’ll see the most common actions here.
                 </p>
               </div>
             ) : (
@@ -194,20 +209,23 @@ export default async function AdminAnalyticsPage() {
                         <span className="min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100">
                           {formatEventLabel(r.name)}
                         </span>
-                        <span className="shrink-0 text-sm tabular-nums text-slate-500 dark:text-slate-400">
-                          {n.toLocaleString()}
+                        <span
+                          className="shrink-0 text-sm tabular-nums text-slate-500 dark:text-slate-400"
+                          title={`Count: ${n.toLocaleString()}`}
+                        >
+                          {n.toLocaleString()}×
                         </span>
                       </div>
                       <div
                         className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200/80 dark:bg-slate-800/80"
                         role="presentation"
+                        aria-label={`${formatEventLabel(r.name)}: about ${pct} percent of the most common action`}
                       >
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-[#2563EB] to-[#14B8A6] shadow-sm transition-[width] duration-500"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <p className="mt-0.5 font-mono text-[10px] text-slate-400 dark:text-slate-500">{r.name}</p>
                     </li>
                   );
                 })}
@@ -218,20 +236,22 @@ export default async function AdminAnalyticsPage() {
 
         <GlassCard className="overflow-hidden p-0">
           <div className="border-b border-slate-200/80 bg-sky-50/40 px-4 py-3 dark:border-white/10 dark:bg-slate-800/30">
-            <h2 className="font-serif text-lg text-sky-900 dark:text-sky-200">Event feed</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Latest 50, newest first.</p>
+            <h2 className="font-serif text-lg text-sky-900 dark:text-sky-200">Latest activity</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Newest on top, up to 50 recent items.</p>
           </div>
           <div className="p-0">
             {recent.length === 0 ? (
-              <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">No rows yet.</div>
+              <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                Nothing has been recorded yet. Check back after visitors use the store.
+              </div>
             ) : (
               <div className="max-h-[28rem] overflow-y-auto">
                 <table className="w-full min-w-[min(100%,24rem)] text-left text-sm">
                   <thead className="sticky top-0 z-10 bg-sky-50/90 text-slate-600 shadow-sm backdrop-blur dark:bg-slate-800/90 dark:text-slate-200">
                     <tr>
-                      <th className="p-3 font-medium">Time</th>
-                      <th className="p-3 font-medium">Event</th>
-                      <th className="p-3 font-medium">User</th>
+                      <th className="p-3 font-medium">When</th>
+                      <th className="p-3 font-medium">What happened</th>
+                      <th className="p-3 font-medium">Signed in?</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/10">
@@ -245,22 +265,19 @@ export default async function AdminAnalyticsPage() {
                         </td>
                         <td className="p-3">
                           <span
-                            className="inline-block max-w-[12rem] truncate rounded-full border border-sky-200/80 bg-white px-2.5 py-0.5 text-xs font-medium text-[#1E3A8A] dark:border-white/10 dark:bg-slate-900/60 dark:text-sky-200"
+                            className="inline-block text-sm font-medium text-[#1E3A8A] dark:text-sky-200"
                             title={r.name}
                           >
                             {formatEventLabel(r.name)}
                           </span>
                         </td>
-                        <td className="p-3 font-mono text-xs text-slate-500 dark:text-slate-500">
+                        <td className="p-3 text-xs text-slate-600 dark:text-slate-400">
                           {r.user_id ? (
-                            <span
-                              className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] dark:bg-slate-800/80"
-                              title={r.user_id}
-                            >
-                              {r.user_id.slice(0, 8)}…
+                            <span title="A logged-in customer; ID is for support only" className="text-slate-700 dark:text-slate-300">
+                              Yes
                             </span>
                           ) : (
-                            <span className="text-slate-400">Guest</span>
+                            <span>Not yet (browser visit)</span>
                           )}
                         </td>
                       </tr>

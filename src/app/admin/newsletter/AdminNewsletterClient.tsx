@@ -3,7 +3,7 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
 import { Modal } from "@/components/ui/Modal";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type SubRow = { id: string; email: string; source: string | null; created_at: string };
 
@@ -46,6 +46,35 @@ export function AdminNewsletterClient({
   const [tab, setTab] = useState<"newsletters" | "subscribers">("newsletters");
   const [list, setList] = useState<SubRow[]>(initial);
   const [posts, setPosts] = useState<PostRow[]>(initialPosts);
+  const [subLoading, setSubLoading] = useState(false);
+  const [subErr, setSubErr] = useState("");
+
+  const refreshSubscribers = useCallback(async () => {
+    setSubErr("");
+    setSubLoading(true);
+    try {
+      const res = await fetch("/api/admin/newsletter", { method: "GET" });
+      if (!res.ok) {
+        setSubErr("Could not load subscribers from the database.");
+        return;
+      }
+      const d = (await res.json()) as { subscribers?: SubRow[] };
+      setList(Array.isArray(d.subscribers) ? d.subscribers : []);
+    } finally {
+      setSubLoading(false);
+    }
+  }, []);
+
+  /* Always use live `newsletter_subscribers` (same as GET /api/admin/newsletter). */
+  useEffect(() => {
+    void refreshSubscribers();
+  }, [refreshSubscribers]);
+
+  useEffect(() => {
+    if (tab === "subscribers") {
+      void refreshSubscribers();
+    }
+  }, [tab, refreshSubscribers]);
 
   const [title, setTitle] = useState("");
   const [subjectLine, setSubjectLine] = useState("");
@@ -165,14 +194,36 @@ export function AdminNewsletterClient({
           </button>
         ))}
       </div>
+      {subErr ? <p className="text-sm text-amber-800 dark:text-amber-200">{subErr}</p> : null}
 
       {tab === "newsletters" && (
         <>
+          <div className="flex flex-col gap-2 rounded-2xl border border-sky-200/60 bg-sky-50/50 p-3 text-sm sm:flex-row sm:items-center sm:justify-between dark:border-sky-500/20 dark:bg-slate-800/50">
+            <p className="text-slate-700 dark:text-slate-200">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">Current audience: </span>
+              {list.length} subscriber{list.length === 1 ? "" : "s"}
+              {subLoading ? (
+                <span className="text-slate-500"> · syncing with server…</span>
+              ) : null}{" "}
+              <span className="text-slate-500 dark:text-slate-400">
+                (live list from <code className="text-xs">newsletter_subscribers</code> — same data as the Subscribers tab).
+              </span>
+            </p>
+            <LuxuryButton
+              type="button"
+              variant="ghost"
+              className="!shrink-0 !px-3 !py-1.5 text-xs"
+              disabled={subLoading}
+              onClick={() => void refreshSubscribers()}
+            >
+              {subLoading ? "Refreshing…" : "Refresh audience"}
+            </LuxuryButton>
+          </div>
           <GlassCard>
             <h2 className="font-serif text-xl text-[#1E3A8A] dark:text-sky-200">Write a newsletter</h2>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Composed in JMJ, sent manually for now. Use your subject and body in Mailchimp, Resend, or any ESP—or export
-              subscriber emails from the Subscribers tab.
+              Composed in JMJ, sent manually for now. Your recipient list is the people above. Copy subject and body to
+              Mailchimp, Resend, or any ESP, then paste those emails from the Subscribers tab.
             </p>
             <form className="mt-4 space-y-3" onSubmit={createNewsletter}>
               <div className="jmj-field-block">
@@ -306,7 +357,24 @@ export function AdminNewsletterClient({
       )}
 
       {tab === "subscribers" && (
-        <GlassCard className="overflow-x-auto p-0">
+        <div className="space-y-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="font-serif text-lg text-sky-900 dark:text-sky-200">People who asked for newsletters</h2>
+            <LuxuryButton
+              type="button"
+              variant="ghost"
+              className="!w-fit !px-3 !py-1.5 text-xs"
+              disabled={subLoading}
+              onClick={() => void refreshSubscribers()}
+            >
+              {subLoading ? "Loading…" : "Reload from database"}
+            </LuxuryButton>
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {list.length} total · list reloads from the server when you open this tab, use Reload, or after a removal. The Source
+            column is how they signed up.
+          </p>
+          <GlassCard className="overflow-x-auto p-0">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="bg-sky-50/50 text-slate-600 dark:bg-slate-800/70 dark:text-slate-200">
               <tr>
@@ -336,7 +404,7 @@ export function AdminNewsletterClient({
                             alert(j.error || "Could not remove");
                             return;
                           }
-                          setList((prev) => prev.filter((x) => x.id !== r.id));
+                          await refreshSubscribers();
                         }}
                       >
                         Remove
@@ -355,6 +423,7 @@ export function AdminNewsletterClient({
             </tbody>
           </table>
         </GlassCard>
+        </div>
       )}
 
       <Modal open={Boolean(editing)} title="Edit newsletter" onClose={() => setEditing(null)}>

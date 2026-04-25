@@ -11,11 +11,25 @@ export default async function AdminCustomers() {
   if (s?.user?.role !== "admin") {
     redirect("/");
   }
-  let list: { id: string; name: string | null; email: string; address: string | null; created_at: string }[] = [];
+  let list: {
+    id: string;
+    name: string | null;
+    email: string;
+    address_line1: string | null;
+    address_line2: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+    country: string | null;
+    created_at: string;
+  }[] = [];
   if (hasDatabase()) {
     const sql = getSql();
     const rows = (await sql`
-      SELECT id, name, email, address, created_at
+      SELECT
+        id, name, email,
+        address_line1, address_line2, city, state, postal_code, country,
+        created_at
       FROM users
       WHERE role = 'customer'
       ORDER BY created_at DESC

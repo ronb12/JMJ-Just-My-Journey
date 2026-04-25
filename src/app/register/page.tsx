@@ -15,7 +15,12 @@ function Form() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [line1, setLine1] = useState("");
+  const [line2, setLine2] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [postal, setPostal] = useState("");
+  const [country, setCountry] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   return (
@@ -36,7 +41,12 @@ function Form() {
               email,
               password,
               phone: phone || undefined,
-              address: address.trim() || undefined,
+              address_line1: line1.trim() || undefined,
+              address_line2: line2.trim() || undefined,
+              city: city.trim() || undefined,
+              state: state.trim() || undefined,
+              postal_code: postal.trim() || undefined,
+              country: country.trim() || undefined,
             }),
           });
           if (!res.ok) {
@@ -89,15 +99,59 @@ function Form() {
             autoComplete="tel"
           />
         </div>
+        <p className="pt-1 text-xs font-semibold uppercase tracking-widest text-slate-500">Address (optional)</p>
         <div className="jmj-field-block">
-          <label className="jmj-label">Address (optional)</label>
-          <textarea
-            className="jmj-textarea"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            rows={3}
-            autoComplete="street-address"
+          <label className="jmj-label">Street line 1</label>
+          <input
+            className="jmj-input"
+            value={line1}
+            onChange={(e) => setLine1(e.target.value)}
+            autoComplete="address-line1"
           />
+        </div>
+        <div className="jmj-field-block">
+          <label className="jmj-label">Street line 2</label>
+          <input
+            className="jmj-input"
+            value={line2}
+            onChange={(e) => setLine2(e.target.value)}
+            autoComplete="address-line2"
+          />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="jmj-field-block">
+            <label className="jmj-label">City</label>
+            <input className="jmj-input" value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" />
+          </div>
+          <div className="jmj-field-block">
+            <label className="jmj-label">State / province</label>
+            <input
+              className="jmj-input"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              autoComplete="address-level1"
+            />
+          </div>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="jmj-field-block">
+            <label className="jmj-label">Postal code</label>
+            <input
+              className="jmj-input"
+              value={postal}
+              onChange={(e) => setPostal(e.target.value)}
+              autoComplete="postal-code"
+            />
+          </div>
+          <div className="jmj-field-block">
+            <label className="jmj-label">Country</label>
+            <input
+              className="jmj-input"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              autoComplete="country-name"
+            />
+          </div>
         </div>
         <div className="jmj-field-block">
           <label className="jmj-label">Password (8+ characters)</label>

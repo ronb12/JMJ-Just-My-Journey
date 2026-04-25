@@ -110,27 +110,27 @@ export function CustomerBookingsClient({ initial }: { initial: Row[] }) {
           <div className="space-y-3">
             <div className="grid gap-2 text-sm sm:grid-cols-2">
               <div>
-                <label className="text-xs font-medium text-slate-600">Date</label>
+                <label className="jmj-label">Date</label>
                 <input
                   type="date"
-                  className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                  className="jmj-input"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-600">Time</label>
+                <label className="jmj-label">Time</label>
                 <input
                   type="time"
-                  className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                  className="jmj-input"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-xs font-medium text-slate-600">Notes</label>
+                <label className="jmj-label">Notes</label>
                 <textarea
-                  className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                  className="jmj-textarea"
                   rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}

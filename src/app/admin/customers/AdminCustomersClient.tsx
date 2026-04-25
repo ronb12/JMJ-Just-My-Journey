@@ -97,17 +97,17 @@ export function AdminCustomersClient({ initial }: { initial: Row[] }) {
         {editing ? (
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-medium text-slate-600">Name</label>
+              <label className="jmj-label">Name</label>
               <input
-                className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                className="jmj-input"
                 value={name}
                 onChange={(ev) => setName(ev.target.value)}
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-600">Email</label>
+              <label className="jmj-label">Email</label>
               <input
-                className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                className="jmj-input"
                 value={email}
                 onChange={(ev) => setEmail(ev.target.value)}
               />

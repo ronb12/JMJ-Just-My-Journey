@@ -114,26 +114,26 @@ function ProviderForm({
   const [busy, setBusy] = useState(false);
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="text-xs font-medium text-slate-600">Provider name</label>
+            <label className="jmj-label">Provider name</label>
             <input
-              className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+              className="jmj-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Jacqueline Jackson"
             />
           </div>
           <div className="sm:col-span-2">
-            <label className="text-xs font-medium text-slate-600">Specialty (optional)</label>
+            <label className="jmj-label">Specialty (optional)</label>
             <input
-              className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+              className="jmj-input"
               value={specialty}
               onChange={(e) => setSpecialty(e.target.value)}
               placeholder="e.g. Massage Therapy, Skincare"
             />
-            <p className="mt-1 text-xs text-slate-500">Shows in admin lists and can be used for internal notes.</p>
+            <p className="jmj-help">Shows in admin lists and can be used for internal notes.</p>
           </div>
         </div>
       </div>

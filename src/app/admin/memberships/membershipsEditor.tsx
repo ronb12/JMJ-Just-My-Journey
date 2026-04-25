@@ -110,24 +110,24 @@ function MembershipForm({ initial, onSaved }: { initial?: Row; onSaved: () => vo
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-slate-600">Membership name</label>
+          <label className="jmj-label">Membership name</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Monthly Self‑Care"
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-slate-600">Monthly price (USD)</label>
+          <label className="jmj-label">Monthly price (USD)</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={monthly}
             onChange={(e) => setMonthly(e.target.value)}
             placeholder="49"
             inputMode="decimal"
           />
-          <p className="mt-1 text-xs text-slate-500">Displayed to customers; payments are handled through Stripe.</p>
+          <p className="jmj-help">Displayed to customers; payments are handled through Stripe.</p>
         </div>
       </div>
       <div className="flex justify-end">

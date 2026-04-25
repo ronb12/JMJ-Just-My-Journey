@@ -66,6 +66,23 @@
   .jmj-container {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
+
+  /* Modal form field styling (high separation + dark-mode safe). */
+  .jmj-label {
+    @apply text-xs font-medium text-slate-700 dark:text-slate-200;
+  }
+  .jmj-help {
+    @apply mt-1 text-xs text-slate-500 dark:text-slate-400;
+  }
+  .jmj-input {
+    @apply mt-1 w-full rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-900/30;
+  }
+  .jmj-select {
+    @apply mt-1 w-full rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-900/30;
+  }
+  .jmj-textarea {
+    @apply mt-1 w-full rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-900/30;
+  }
 }
 
 @font-face {

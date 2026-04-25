@@ -114,18 +114,18 @@ function AddForm({ onAdd }: { onAdd: () => void }) {
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-slate-600">Service name</label>
+          <label className="jmj-label">Service name</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Aromatherapy Session"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-600">Price (USD)</label>
+          <label className="jmj-label">Price (USD)</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="99"
@@ -133,9 +133,9 @@ function AddForm({ onAdd }: { onAdd: () => void }) {
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-slate-600">Description</label>
+          <label className="jmj-label">Description</label>
           <textarea
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-textarea"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder="Short description for customers…"
@@ -179,35 +179,35 @@ function EditForm({ initial, onDone }: { initial: S; onDone: () => void }) {
     <div className="space-y-4">
       <div className="grid gap-3 text-sm sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-slate-600">Service name</label>
+          <label className="jmj-label">Service name</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-600">Price (USD)</label>
+          <label className="jmj-label">Price (USD)</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             inputMode="decimal"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-600">Duration (minutes)</label>
+          <label className="jmj-label">Duration (minutes)</label>
           <input
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-input"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             inputMode="numeric"
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-slate-600">Description</label>
+          <label className="jmj-label">Description</label>
           <textarea
-            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            className="jmj-textarea"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             rows={3}

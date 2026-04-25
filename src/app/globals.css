@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-jmj: var(--font-outfit);
+  --font-jmj-serif: var(--font-cormorant);
+  --color-jmj-primary: #2563eb;
+  --color-jmj-soft: #60a5fa;
+  --color-jmj-light: #eff6ff;
+  --color-jmj-navy: #1e3a8a;
+  --color-jmj-teal: #14b8a6;
+  --color-jmj-gray: #f3f4f6;
+}
+
+.bg-gradient-hero {
+  background: linear-gradient(165deg, #eff6ff 0%, #e0f2fe 32%, #f0f9ff 55%, #e0f2fe 100%);
+}
+
+/* Respect reduced motion: global helper */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+  .float-blob-1,
+  .float-blob-2,
+  .float-blob-3 {
+    animation: none;
+  }
+}
+
+@layer base {
+  html,
+  body {
+    min-height: 100%;
+  }
+  body {
+    @apply text-slate-800 antialiased;
+    font-family: var(--font-outfit, ui-sans-serif, system-ui);
+  }
+  h1,
+  h2,
+  h3,
+  .font-serif,
+  [data-serif] {
+    font-family: var(--font-cormorant, "Georgia", ui-serif, serif);
+  }
+}
+
+@layer utilities {
+  .jmj-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@font-face {
+  /* placeholder — fonts loaded via next/font in layout */
+  font-family: "JMJ-Placeholder";
+  font-display: swap;
+  src: local("Georgia");
+}

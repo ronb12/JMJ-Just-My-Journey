@@ -54,6 +54,9 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${cormorant.variable} h-full scroll-smooth`}
     >
+      <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3565666509316178" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full bg-[#F3F4F6] text-slate-800 dark:bg-slate-950 dark:text-slate-100">
         <SessionProvider>
           <ThemeProvider>
